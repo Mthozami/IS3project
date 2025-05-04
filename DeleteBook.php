@@ -2,7 +2,7 @@
 // Database connection
 $host = 'localhost';
 $username = 'root';
-$password = 'Mthozami@2004'; // replace with your DB password
+$password = 'Mthozami@2004'; 
 $dbname = 'LibraryDB';
 
 $conn = new mysqli($host, $username, $password, $dbname);
