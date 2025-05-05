@@ -160,6 +160,7 @@
     <div class="book-form">
       <h2>Add New Book</h2>
       <form method="POST" action="AddBook.php" id="addBookForm">
+        <input type="hidden" id="bookId" name="bookId" />
         <input type="text" name="title" id="title" placeholder="Book Title" required />
         <input type="number" name="quantity" id="quantity" placeholder="Quantity" required />
         <input type="text" name="isbn" id="isbn" placeholder="ISBN" required />
@@ -202,22 +203,41 @@
     }
 
     document.getElementById("addBookForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+  e.preventDefault();
 
-      const title = document.getElementById("title").value.trim();
-      const quantity = document.getElementById("quantity").value.trim();
-      const isbn = document.getElementById("isbn").value.trim();
+  const bookId = document.getElementById("bookId").value;
+  const title = document.getElementById("title").value.trim();
+  const quantity = document.getElementById("quantity").value.trim();
+  const isbn = document.getElementById("isbn").value.trim();
 
-      if (title && quantity && isbn) {
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("quantity", quantity);
-        formData.append("isbn", isbn);
+  if (title && quantity && isbn) {
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("quantity", quantity);
+    formData.append("isbn", isbn);
 
-        fetch("AddBook.php", {
-          method: "POST",
-          body: formData,
-        })
+    if (bookId) {
+      formData.append("bookId", bookId);
+      fetch("EditBook.php", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          if (data.trim() === "success") {
+            alert("Book updated successfully!");
+            document.getElementById("addBookForm").reset();
+            document.getElementById("formButton").textContent = "Add Book";
+            fetchBooks();
+          } else {
+            alert("Error updating book.");
+          }
+        });
+    } else {
+      fetch("AddBook.php", {
+        method: "POST",
+        body: formData,
+      })
         .then((response) => response.text())
         .then((data) => {
           if (data.trim() === "success") {
@@ -225,14 +245,13 @@
             document.getElementById("addBookForm").reset();
             fetchBooks();
           } else {
-            alert("Error adding book. Please try again.");
+            alert("Error adding book.");
           }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
         });
-      }
-    });
+    }
+  }
+});
+
 
     function deleteBook(BookID) {
       if (confirm("Are you sure you want to delete this book?")) {
@@ -254,6 +273,15 @@
         });
       }
     }
+
+    function editBook(bookId, title, quantity, isbn) {
+  document.getElementById("bookId").value = bookId;
+  document.getElementById("title").value = title;
+  document.getElementById("quantity").value = quantity;
+  document.getElementById("isbn").value = isbn;
+  document.getElementById("formButton").textContent = "Update Book";
+}
+
 
     document.addEventListener("DOMContentLoaded", fetchBooks);
   </script>
