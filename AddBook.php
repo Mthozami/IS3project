@@ -1,34 +1,34 @@
 <?php
-// add_book.php
+// AddBook.php
 
 $host = 'localhost';
 $username = 'root';
-$password = 'Mthozami@2004'; // replace with your DB password
+$password = 'Mzamoh@25';
 $dbname = 'LibraryDB';
 
 $conn = new mysqli($host, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-  die('Connection Failed: ' . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
 
-$title = $_POST['title'] ?? '';
-$quantity = $_POST['quantity'] ?? '';
-$isbn = $_POST['isbn'] ?? '';
+if (isset($_POST['title'], $_POST['quantity'], $_POST['isbn'])) {
+    $title = $_POST['title'];
+    $quantity = intval($_POST['quantity']);
+    $isbn = $_POST['isbn'];
 
-if (!empty($title) && !empty($quantity) && !empty($isbn)) {
-  $stmt = $conn->prepare("INSERT INTO Books (Title, Quantity, ISBN) VALUES (?, ?, ?)");
-  $stmt->bind_param("sis", $title, $quantity, $isbn);
+    $stmt = $conn->prepare("INSERT INTO Books (Title, Quantity, ISBN) VALUES (?, ?, ?)");
+    $stmt->bind_param("sis", $title, $quantity, $isbn);
 
-  if ($stmt->execute()) {
-    echo "success";
-  } else {
-    echo "error";
-  }
+    if ($stmt->execute()) {
+        echo "success";
+    } else {
+        echo "error";
+    }
 
-  $stmt->close();
+    $stmt->close();
 } else {
-  echo "invalid";
+    echo "invalid";
 }
 
 $conn->close();
