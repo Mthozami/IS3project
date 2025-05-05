@@ -202,42 +202,23 @@
         });
     }
 
-    document.getElementById("addBookForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+   document.getElementById("addBookForm").addEventListener("submit", function (e) {
+      e.preventDefault();
 
-  const bookId = document.getElementById("bookId").value;
-  const title = document.getElementById("title").value.trim();
-  const quantity = document.getElementById("quantity").value.trim();
-  const isbn = document.getElementById("isbn").value.trim();
+      const title = document.getElementById("title").value.trim();
+      const quantity = document.getElementById("quantity").value.trim();
+      const isbn = document.getElementById("isbn").value.trim();
 
-  if (title && quantity && isbn) {
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("quantity", quantity);
-    formData.append("isbn", isbn);
+      if (title && quantity && isbn) {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("quantity", quantity);
+        formData.append("isbn", isbn);
 
-    if (bookId) {
-      formData.append("bookId", bookId);
-      fetch("EditBook.php", {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => response.text())
-        .then((data) => {
-          if (data.trim() === "success") {
-            alert("Book updated successfully!");
-            document.getElementById("addBookForm").reset();
-            document.getElementById("formButton").textContent = "Add Book";
-            fetchBooks();
-          } else {
-            alert("Error updating book.");
-          }
-        });
-    } else {
-      fetch("AddBook.php", {
-        method: "POST",
-        body: formData,
-      })
+        fetch("AddBook.php", {
+          method: "POST",
+          body: formData,
+        })
         .then((response) => response.text())
         .then((data) => {
           if (data.trim() === "success") {
@@ -245,12 +226,14 @@
             document.getElementById("addBookForm").reset();
             fetchBooks();
           } else {
-            alert("Error adding book.");
+            alert("Error adding book. Please try again.");
           }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
         });
-    }
-  }
-});
+      }
+    });
 
 
     function deleteBook(BookID) {
