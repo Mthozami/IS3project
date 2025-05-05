@@ -222,6 +222,7 @@
   <div class="container">
     <!-- Book Form -->
     <div class="book-form">
+<<<<<<< HEAD
       <h2 id="formTitle">Add New Book</h2>
       <form id="bookForm">
         <input type="hidden" id="bookID" />
@@ -229,6 +230,15 @@
         <input type="number" id="quantity" placeholder="Quantity" required />
         <input type="text" id="isbn" placeholder="ISBN" required />
         <button type="submit">Save Book</button>
+=======
+      <h2>Add New Book</h2>
+      <form method="POST" action="AddBook.php" id="addBookForm">
+        <input type="hidden" id="bookId" name="bookId" />
+        <input type="text" name="title" id="title" placeholder="Book Title" required />
+        <input type="number" name="quantity" id="quantity" placeholder="Quantity" required />
+        <input type="text" name="isbn" id="isbn" placeholder="ISBN" required />
+        <button type="submit">Add Book</button>
+>>>>>>> 93113b0856994e355254b872ed6a48c448e24e00
       </form>
     </div>
 
@@ -268,8 +278,7 @@
         });
     }
 
-    // Add or update book
-    document.getElementById("bookForm").addEventListener("submit", function (e) {
+   document.getElementById("addBookForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const bookID = document.getElementById("bookID").value;
@@ -310,8 +319,8 @@
       }
     });
 
-    // Delete book
-    function deleteBook(bookID) {
+
+    function deleteBook(BookID) {
       if (confirm("Are you sure you want to delete this book?")) {
         const formData = new FormData();
         formData.append("BookID", bookID);
@@ -335,31 +344,14 @@
       }
     }
 
-    // Edit book
-    function editBook(bookID, title, quantity, isbn) {
-      document.getElementById("formTitle").textContent = "Edit Book";
-      document.getElementById("bookID").value = bookID;
-      document.getElementById("title").value = title;
-      document.getElementById("quantity").value = quantity;
-      document.getElementById("isbn").value = isbn;
-    }
+    function editBook(bookId, title, quantity, isbn) {
+  document.getElementById("bookId").value = bookId;
+  document.getElementById("title").value = title;
+  document.getElementById("quantity").value = quantity;
+  document.getElementById("isbn").value = isbn;
+  document.getElementById("formButton").textContent = "Update Book";
+}
 
-    // Search books
-    function searchBooks() {
-      const input = document.getElementById("searchInput").value.toLowerCase();
-      const rows = document.querySelectorAll("#bookTableBody tr");
-
-      rows.forEach(row => {
-        const title = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-        const isbn = row.querySelector("td:nth-child(4)").textContent.toLowerCase();
-
-        if (title.includes(input) || isbn.includes(input)) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
-      });
-    }
 
     document.addEventListener("DOMContentLoaded", fetchBooks);
   </script>
