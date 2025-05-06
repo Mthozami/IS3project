@@ -21,14 +21,16 @@ if (isset($_POST['title'], $_POST['quantity'], $_POST['isbn'])) {
     $stmt->bind_param("sis", $title, $quantity, $isbn);
 
     if ($stmt->execute()) {
-        echo "success";
+        // Redirect with success query parameter
+        header("Location: AddBook.html?success=true");
+        exit;
     } else {
-        echo "error";
+        echo "Error: " . $stmt->error;
     }
 
     $stmt->close();
 } else {
-    echo "invalid";
+    echo "Invalid input!";
 }
 
 $conn->close();

@@ -146,11 +146,17 @@
     <div class="borrowing-form">
       <h2>Record Borrowing</h2>
       <form id="borrowingForm">
+        <label for="bookTitle">Book Title</label>
+        <input type="text" id="bookTitle" required />
+
         <label for="bookId">Book ID</label>
-        <input type="text" id="bookId" required />
+        <input type="text" id="bookId" readonly />
+
+        <label for="bookTitle">Full Name</label>
+        <input type="text" id="bookTitle" required />
 
         <label for="userId">User ID</label>
-        <input type="text" id="userId" required />
+        <input type="text" id="userId" readonly />
 
         <label for="borrowDate">Borrow Date</label>
         <input type="date" id="borrowDate" required />

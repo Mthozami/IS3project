@@ -2,7 +2,7 @@
 // UpdateBook.php
 
 // DB connection
-$conn = new mysqli("localhost", "root", "Mzamoh@25", "LibraryDB");
+$conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   if ($stmt->execute()) {
     echo "Book updated successfully.";
-    header("Location: index.html"); // Change if needed
+    header("Location: AddBook.html"); // Change if needed
     exit;
   } else {
     echo "Error updating book: " . $conn->error;
