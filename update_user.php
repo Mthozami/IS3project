@@ -9,7 +9,7 @@ if (isset($_POST['UserID'])) {
     // Database connection
     $host = "localhost";
     $username = "root";
-    $password = "@Sihle24";
+    $password = "Mthozami@2004";
     $dbname = "LibraryDB";
 
     $conn = new mysqli($host, $username, $password, $dbname);

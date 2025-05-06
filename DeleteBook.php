@@ -3,7 +3,7 @@
 
 $host = 'localhost';
 $username = 'root';
-$password = '@Sihle24';
+$password = 'Mthozami@2004';
 $dbname = 'LibraryDB';
 
 // Connect to the database
