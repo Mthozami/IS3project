@@ -2,7 +2,7 @@
 // Database connection settings
 $host = "localhost";
 $username = "root";
-$password = "Mthozami@2004";
+$password = "@Sihle24";
 $dbname = "LibraryDB";
 
 // Create connection

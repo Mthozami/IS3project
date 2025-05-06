@@ -2,7 +2,7 @@
 // UpdateBook.php
 
 // DB connection
-$conn = new mysqli("localhost", "root", "Mzamoh@25", "LibraryDB");
+$conn = new mysqli("localhost", "root", "@Sihle24", "LibraryDB");
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }

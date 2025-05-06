@@ -74,7 +74,7 @@
       font-weight: bold;
     }
 
-    form input, form button {
+    form input, form select, form button {
       width: 100%;
       padding: 8px;
       margin-bottom: 15px;
@@ -130,8 +130,8 @@
   <header class="navbar">
     <div class="logo">📚 Admin Dashboard</div>
     <nav class="nav-links">
-      <a href="#">Dashboard</a>
-      <a href="#">Manage Users</a>
+      <a href="AdminDashBoard.html">Dashboard</a>
+      <a href="RegisterStudent.html">Manage Users</a>
       <a href="#">Books</a>
       <a href="#">Borrowings</a>
       <a href="#">Fines</a>
@@ -146,11 +146,23 @@
     <div class="borrowing-form">
       <h2>Record Borrowing</h2>
       <form id="borrowingForm">
+
+        <!-- Book Title Dropdown -->
+        <label for="bookSelect">Select Book Title</label>
+        <select id="bookSelect" onchange="updateBookID()" required>
+          <option value="">-- Loading books... --</option>
+        </select>
+
         <label for="bookId">Book ID</label>
-        <input type="text" id="bookId" required />
+        <input type="text" id="bookId" readonly />
+
+        <!-- Full Name Autocomplete -->
+        <label for="userFullName">Full Name</label>
+        <input list="userList" id="userFullName" name="userFullName" oninput="updateUserIDFromName()" required />
+        <datalist id="userList"></datalist>
 
         <label for="userId">User ID</label>
-        <input type="text" id="userId" required />
+        <input type="text" id="userId" readonly />
 
         <label for="borrowDate">Borrow Date</label>
         <input type="date" id="borrowDate" required />
@@ -187,6 +199,8 @@
     let borrowingCounter = 1;
     const form = document.getElementById('borrowingForm');
     const tableBody = document.getElementById('borrowingTableBody');
+    const usersMap = new Map(); // name → ID
+    const booksMap = new Map(); // BookID → Title
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -200,7 +214,6 @@
       borrowingCounter++;
 
       const row = document.createElement('tr');
-
       row.innerHTML = `
         <td>${borrowingId}</td>
         <td>${bookId}</td>
@@ -214,9 +227,9 @@
       `;
 
       tableBody.appendChild(row);
-
-      // Reset form
       form.reset();
+      document.getElementById('bookId').value = '';
+      document.getElementById('userId').value = '';
     });
 
     function markReturned(button) {
@@ -224,6 +237,61 @@
       row.cells[5].textContent = 'Returned';
       button.remove();
     }
+
+    function updateBookID() {
+      const bookSelect = document.getElementById("bookSelect");
+      const bookIdField = document.getElementById("bookId");
+      bookIdField.value = bookSelect.value;
+    }
+
+    function fetchBooks() {
+  fetch("get_books.php?format=json")
+    .then(response => response.json())
+    .then(data => {
+      const bookSelect = document.getElementById("bookSelect");
+      bookSelect.innerHTML = `<option value="">-- Select a book --</option>`;
+      data.forEach(book => {
+        const option = document.createElement("option");
+        option.value = book.BookID;
+        option.text = book.Title;
+        bookSelect.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error("Error loading books:", error);
+      const bookSelect = document.getElementById("bookSelect");
+      bookSelect.innerHTML = `<option value="">-- Failed to load books --</option>`;
+    });
+}
+
+
+    function fetchUsers() {
+      fetch("get_users.php")
+        .then(response => response.json())
+        .then(data => {
+          const datalist = document.getElementById("userList");
+          datalist.innerHTML = '';
+          data.forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.FullName;
+            datalist.appendChild(option);
+            usersMap.set(user.FullName, user.UserID);
+          });
+        })
+        .catch(error => console.error("Error loading users:", error));
+    }
+
+    function updateUserIDFromName() {
+      const nameInput = document.getElementById("userFullName").value;
+      const userIdField = document.getElementById("userId");
+      const userId = usersMap.get(nameInput) || "";
+      userIdField.value = userId;
+    }
+
+    window.onload = function () {
+      fetchBooks();
+      fetchUsers();
+    };
   </script>
 
 </body>
