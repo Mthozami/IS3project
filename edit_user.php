@@ -8,7 +8,7 @@ $userId = $_GET['UserID'];
 // Database connection
 $host = "localhost";
 $username = "root";
-$password = "Mzamoh@25";
+$password = "Mthozami@2004";
 $dbname = "LibraryDB";
 
 $conn = new mysqli($host, $username, $password, $dbname);

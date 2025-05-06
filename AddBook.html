@@ -268,7 +268,8 @@
         });
     }
 
-   document.getElementById("addBookForm").addEventListener("submit", function (e) {
+    // Add or update book
+    document.getElementById("bookForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const bookID = document.getElementById("bookID").value;
@@ -309,8 +310,8 @@
       }
     });
 
-
-    function deleteBook(BookID) {
+    // Delete book
+    function deleteBook(bookID) {
       if (confirm("Are you sure you want to delete this book?")) {
         const formData = new FormData();
         formData.append("BookID", bookID);
@@ -334,14 +335,31 @@
       }
     }
 
-    function editBook(bookId, title, quantity, isbn) {
-  document.getElementById("bookId").value = bookId;
-  document.getElementById("title").value = title;
-  document.getElementById("quantity").value = quantity;
-  document.getElementById("isbn").value = isbn;
-  document.getElementById("formButton").textContent = "Update Book";
-}
+    // Edit book
+    function editBook(bookID, title, quantity, isbn) {
+      document.getElementById("formTitle").textContent = "Edit Book";
+      document.getElementById("bookID").value = bookID;
+      document.getElementById("title").value = title;
+      document.getElementById("quantity").value = quantity;
+      document.getElementById("isbn").value = isbn;
+    }
 
+    // Search books
+    function searchBooks() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#bookTableBody tr");
+
+      rows.forEach(row => {
+        const title = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+        const isbn = row.querySelector("td:nth-child(4)").textContent.toLowerCase();
+
+        if (title.includes(input) || isbn.includes(input)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
 
     document.addEventListener("DOMContentLoaded", fetchBooks);
   </script>
