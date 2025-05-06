@@ -1,0 +1,307 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<header>
+    <div class="nav-container">
+        <h1><i class="fas fa-book-open"></i> Siza Library</h1>
+        <nav>
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        
+        <a href="gallery.html" class="active">Gallery</a>
+        <a href="contact.html">Contact</a>
+       <a href="login.html">Login</a>
+      </nav>
+    
+    </div>
+</header>
+<body>
+  <main class="gallery-container">
+    <div class="gallery-item">
+      <img src="images\stud.webp" alt="Book 1">
+    </div>
+    <div class="gallery-item">
+      <img src="images/book2.jpg" alt="Book 2">
+    </div>
+    <div class="gallery-item">
+      <img src="images\studd" alt="Book 3">
+    </div>
+    <div class="gallery-item">
+      <img src="images/book4.jpg" alt="Book 4">
+    </div>
+    <div class="gallery-item">
+      <img src="images\bbb.jpg" alt="Book 5">
+    </div>
+    <div class="gallery-item">
+      <img src="images\studd" alt="Book 6">
+    </div>
+    <div class="gallery-item">
+    <img src="images/book1.jpg" alt="Book 6">
+   </div>
+  <div class="gallery-item">
+ <img src="images\stud4" alt="Book 6">
+</div> <div class="gallery-item">
+     <img src="images/book2.jpg" alt="Book 6">
+    </div>
+    <div class="gallery-item">
+    <img src="images/book3.jpg" alt="Book 6">
+     </div>
+    <div class="gallery-item">
+       <img src="images/book3.jpg" alt="Book 6">
+        </div>
+      <div class="gallery-item">
+        <img src="images/book3.jpg" alt="Book 6">
+         </div>
+         <div class="gallery-item">
+        <img src="images/book2.jpg" alt="Book 6">
+         </div>
+       <div class="gallery-item">
+      <img src="images\tt.avif" alt="Book 6">
+       </div>
+       <div class="gallery-item">
+       <img src="images/book3.jpg" alt="Book 6">
+        </div>
+        <div class="gallery-item">
+       <img src="images/book4.jpg" alt="Book 6">
+        </div>
+        <div class="gallery-item">
+          <img src="images\fff.jpg" alt="Book 6">
+       </div>
+      <div class="gallery-item">
+      <img src="images/book1.jpg" alt="Book 6">
+     </div>
+                                                      
+  </main>
+</body>
+
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section logo-section">
+            <img src="images\logos.jpg" alt="Siza Library Logo">
+            <p>Empowering Minds Through Knowledge</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+        
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Address</h3>
+            <p>123 Knowledge Lane<br>
+            Durban, South Africa<br>
+            4001</p>
+        </div>
+        <div class="footer-section">
+            <h3>Contact Us</h3>
+            <p>Email: info@sizalibrary.co.za<br>
+            Phone: +27 12 345 6789</p>
+            <div class="social-icons">
+                <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" alt="Facebook"></a>
+                <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/145/145812.png" alt="Instagram"></a>
+                <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="Twitter"></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 Siza Library | Empowering Minds</p>
+    </div>
+</footer>
+<style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+
+.gallery-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s;
+}
+
+.gallery-item img:hover {
+  transform: scale(1.05);
+}
+
+    /* ===== Header ===== */
+header {
+  background-color: #003366;
+  color: #fff;
+  padding: 20px 0;
+}
+.nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+.nav-container h1 {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+}
+.nav-container h1 i {
+  margin-right: 8px;
+  color: #00cc66;
+}
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 4px;
+  transition: color 0.3s;
+}
+nav a:hover,
+nav a.active {
+  color: #00cc66;
+}
+nav a:hover::after,
+nav a.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #00cc66;
+}
+
+/* ===== Footer ===== */
+footer {
+  background-color: #003366;
+  color: #fff;
+  padding: 40px 20px 20px;
+}
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: space-between;
+}
+.footer-section {
+  flex: 1 1 220px;
+}
+.footer-section.logo-section img {
+  width: 80px;
+  margin-bottom: 10px;
+}
+.footer-section.logo-section p {
+  font-style: italic;
+  color: #ccc;
+}
+.footer-section h3 {
+  margin-bottom: 12px;
+  color: #00cc66;
+  font-size: 1.1rem;
+}
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+.footer-section ul li a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer-section ul li a:hover {
+  color: #00cc66;
+}
+.footer-section p {
+  line-height: 1.5;
+}
+.social-icons {
+  margin-top: 12px;
+}
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+}
+.social-icons a img {
+  width: 24px;
+  transition: transform 0.3s;
+}
+.social-icons a img:hover {
+  transform: scale(1.2);
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  padding-top: 15px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  nav {
+    margin-top: 12px;
+  }
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+
+.contact-info {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.contact-info p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.contact-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-info ul li {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.contact-info ul li strong {
+    color: #000;
+}
+
+
+</style>
+

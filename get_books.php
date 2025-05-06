@@ -3,7 +3,7 @@
 
 $host = "localhost";
 $username = "root";
-$password = "Mthozami@2004";
+$password = "@Sihle24";
 $dbname = "LibraryDB";
 
 $conn = new mysqli($host, $username, $password, $dbname);
@@ -12,6 +12,29 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
+// Check if JSON is requested via Fetch (e.g., from dropdown)
+if (isset($_GET['format']) && $_GET['format'] === 'json') {
+  $sql = "SELECT BookID, Title FROM Books ORDER BY BookID ASC";
+  $result = $conn->query($sql);
+
+  $books = [];
+
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $books[] = [
+        'BookID' => $row['BookID'],
+        'Title' => $row['Title']
+      ];
+    }
+  }
+
+  header('Content-Type: application/json');
+  echo json_encode($books);
+  $conn->close();
+  exit;
+}
+
+// Otherwise, output HTML table rows (your original behavior)
 $sql = "SELECT BookID, Title, Quantity, ISBN FROM Books ORDER BY BookID ASC";
 $result = $conn->query($sql);
 
@@ -40,15 +63,7 @@ if ($result->num_rows > 0) {
 $conn->close();
 ?>
 
-<!-- ✅ Old editBook function (redirects to edit_book.php) -->
-<script>
-function editBook(bookID, title, quantity, isbn) {
-  const url = `edit_book.php?BookID=${bookID}&Title=${encodeURIComponent(title)}&Quantity=${quantity}&ISBN=${encodeURIComponent(isbn)}`;
-  window.location.href = url;
-}
-</script>
-
-<!-- ✅ New editBook function (redirects to UpdateBook.php) -->
+<!-- ✅ JS function (kept as you had) -->
 <script>
 function editBook(bookID, title, quantity, isbn) {
   window.location.href = "UpdateBook.php?BookID=" + bookID + 

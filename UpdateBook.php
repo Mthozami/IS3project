@@ -3,6 +3,7 @@
 
 // DB connection
 $conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
+$conn = new mysqli("localhost", "root", "@Sihle24", "LibraryDB");
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
