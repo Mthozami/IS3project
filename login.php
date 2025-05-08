@@ -4,11 +4,9 @@ session_start();
 // Database credentials
 $host = "localhost";
 $username = "root";
-<<<<<<< HEAD
+
 $password = "Mzamoh@25";
-=======
-$password = "Mthozami@2004";
->>>>>>> fa647baac7f0f0a4dbe85c50c468fb9082cd0c51
+
 $dbname = "LibraryDB";
 
 // DB connection

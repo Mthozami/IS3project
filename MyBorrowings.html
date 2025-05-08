@@ -87,7 +87,7 @@
     <div class="logo">📚 Siza Library</div>
     <nav class="nav-links">
       <a href="UserDashboard.html">Dashboard</a>
-      <a href="MyBorrowings.php">My Borrowings</a>
+      <a href="MyBorrowings.html">My Borrowings</a>
       <a href="#">My Fines</a>
       <a href="#">Profile</a>
       <a href="logout.php" class="logout-btn">Logout</a>
@@ -108,8 +108,8 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
-        {{BORROWING_ROWS}}
+      <tbody id="borrowings-table-body">
+        <tr><td colspan="6">Loading borrowings...</td></tr>
       </tbody>
     </table>
   </div>
@@ -118,5 +118,42 @@
     <p>© 2025 Uni Library System. All rights reserved.</p>
     <p>Contact: help@unilibrary.com | +123 456 7890</p>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tbody = document.getElementById('Borrowings-table-body');
+      fetch('MyBorrowings.php')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          tbody.innerHTML = '';
+          if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6">No borrowings found.</td></tr>';
+            return;
+          }
+          data.forEach(BorrowingS => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${Borrowing.BorrowingID}</td>
+              <td>${Borrowing.BookID}</td>
+              <td>${Borrowing.Quantity}</td>
+              <td>${Borrowing.BorrowDate}</td>
+              <td>${Borrowing.ReturnDate}</td>
+              <td>${Borrowing.Status}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          tbody.innerHTML = '<tr><td colspan="6">Failed to load borrowings.</td></tr>';
+          console.error('Error fetching borrowings:', error);
+        });
+    });
+  </script>
+
 </body>
 </html>
