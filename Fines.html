@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Fines</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">📚 Admin Dashboard</div>
+    <nav class="nav-links">
+      <a href="AdminDashBoard.html">Dashboard</a>
+      <a href="RegisterStudent.html">Manage Users</a> <!-- Ensure this file exists and matches this exact name -->
+      <a href="AddBook.html">Books</a>
+      <a href="Borrowings.html">Borowings</a>
+      <a href="Fines.html">Fines</a>
+      <a href="#">Reports</a>
+      <button class="logout-btn">Logout</button>
+    </nav>
+  </header>
+
+  <main class="dashboard">
+    <h1>Manage Fines</h1>
+    <p class="subheading">Review, confirm, and manage student fines</p>
+
+    <!-- Unpaid Fines Section -->
+    <section class="table-section">
+      <h2>Unpaid Fines</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Book</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Emily Smith</td>
+            <td>Java Fundamentals</td>
+            <td>R25</td>
+            <td><span class="unpaid">Unpaid</span></td>
+            <td>May 5, 2025</td>
+            <td>
+              <button class="pay-btn">Mark as Paid</button>
+              <button class="edit-btn">Adjust</button>
+              <button class="delete-btn">Cancel</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Payment History Section -->
+    <section class="table-section">
+      <h2>Payment History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Book</th>
+            <th>Amount</th>
+            <th>Paid On</th>
+            <th>Receipt #</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>John Doe</td>
+            <td>Python 101</td>
+            <td>R25</td>
+            <td>April 25, 2025</td>
+            <td>#TXN1024</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Uni Library System. All rights reserved.</p>
+    <p>Contact: admin@unilibrary.com | +27 67456 7890</p>
+  </footer>
+
+</body>
+</html>
+
+
+<style>
+    /* Consistent styling with other admin pages */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #f8fafc;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #34495e;
+  color: white;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  text-decoration: underline;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+
+.dashboard {
+  padding: 40px 30px;
+  flex: 1;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.subheading {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.table-section h2 {
+  margin: 20px 0 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+table thead {
+  background-color: #4b6cb7;
+  color: white;
+}
+
+table th, table td {
+  padding: 15px;
+  text-align: left;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f1f5f9;
+}
+
+.unpaid {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Action Buttons */
+.pay-btn {
+  background-color: #2ecc71;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #f39c12;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.pay-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+  opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+  background-color: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 15px 20px;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+</style>
