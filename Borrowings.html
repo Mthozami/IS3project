@@ -126,184 +126,189 @@
   </style>
 </head>
 
-  <body>
+<body>
 
-    <header class="navbar">
-      <div class="logo">📚 Admin Dashboard</div>
-      <nav class="nav-links">
-        <a href="AdminDashBoard.html">Dashboard</a>
-        <a href="RegisterStudent.html">Manage Users</a>
-        <a href="#">Books</a>
-        <a href="#">Borrowings</a>
-        <a href="#">Fines</a>
-        <a href="#">Reports</a>
-        <button class="logout-btn">Logout</button>
-      </nav>
-    </header>
-  
-    <h1>Borrowings Management</h1>
-  
-    <div class="container">
-      <div class="borrowing-form">
-        <h2>Record Borrowing</h2>
-        <form id="borrowingForm">
-          <label for="bookSelect">Select Book Title</label>
-          <select id="bookSelect" onchange="updateBookID()" required>
-            <option value="">-- Loading books... --</option>
-          </select>
-  
-          <label for="bookId">Book ID</label>
-          <input type="text" id="bookId" name="bookId" readonly />
-  
-          <label for="userFullName">Full Name</label>
-          <input list="userList" id="userFullName" oninput="updateUserIDFromName()" required />
-          <datalist id="userList"></datalist>
-  
-          <label for="userId">User ID</label>
-          <input type="text" id="userId" name="userId" readonly />
-  
-          <label for="quantity">Quantity</label>
-          <input type="number" id="quantity" name="quantity" min="1" required />
-  
-          <label for="borrowDate">Borrow Date</label>
-          <input type="date" id="borrowDate" name="borrowDate" required />
-  
-          <label for="returnDate">Return Date</label>
-          <input type="date" id="returnDate" name="returnDate" required />
-  
-          <button type="submit">Add Borrowing</button>
-        </form>
-      </div>
-  
-      <div class="table-section">
-        <h2>Current Borrowings</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Borrowing ID</th>
-              <th>Book ID</th>
-              <th>User ID</th>
-              <th>Quantity</th>
-              <th>Borrow Date</th>
-              <th>Return Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="borrowingTableBody">
-            <!-- Populated via get_borrowings.php -->
-          </tbody>
-        </table>
-      </div>
+  <header class="navbar">
+    <div class="logo">📚 Admin Dashboard</div>
+    <nav class="nav-links">
+      <a href="AdminDashBoard.html">Dashboard</a>
+      <a href="RegisterStudent.html">Manage Users</a>
+      <a href="#">Books</a>
+      <a href="#">Borrowings</a>
+      <a href="#">Fines</a>
+      <a href="#">Reports</a>
+      <button class="logout-btn">Logout</button>
+    </nav>
+  </header>
+
+  <h1>Borrowings Management</h1>
+
+  <div class="container">
+    <div class="borrowing-form">
+      <h2>Record Borrowing</h2>
+      <form id="borrowingForm">
+        <label for="bookSelect">Select Book Title</label>
+        <select id="bookSelect" onchange="updateBookID()" required>
+          <option value="">-- Loading books... --</option>
+        </select>
+
+        <label for="bookId">Book ID</label>
+        <input type="text" id="bookId" name="bookId" readonly />
+
+        <label for="userFullName">Full Name</label>
+        <input list="userList" id="userFullName" oninput="updateUserIDFromName()" required />
+        <datalist id="userList"></datalist>
+
+        <label for="userId">User ID</label>
+        <input type="text" id="userId" name="userId" readonly />
+
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" min="1" required />
+
+        <label for="borrowDate">Borrow Date</label>
+        <input type="date" id="borrowDate" name="borrowDate" required />
+
+        <label for="returnDate">Return Date</label>
+        <input type="date" id="returnDate" name="returnDate" required />
+
+        <button type="submit">Add Borrowing</button>
+      </form>
     </div>
-  
-    <script>
-      const form = document.getElementById('borrowingForm');
-      const tableBody = document.getElementById('borrowingTableBody');
-      const usersMap = new Map();
-  
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(form);
-  
-        fetch('AddBorrowing.php', {
-          method: 'POST',
-          body: formData
-        })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            alert(res.message);
-            loadBorrowings(); // refresh table
-            form.reset();
-            document.getElementById('bookId').value = '';
-            document.getElementById('userId').value = '';
-          } else {
-            alert("Error: " + res.message);
-          }
-        })
-        .catch(err => {
-          console.error("Submission error:", err);
-          alert("An error occurred.");
-        });
+
+    <div class="table-section">
+      <h2>Current Borrowings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Borrowing ID</th>
+            <th>Book ID</th>
+            <th>User ID</th>
+            <th>Quantity</th>
+            <th>Borrow Date</th>
+            <th>Return Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="borrowingTableBody">
+          <!-- Populated via get_borrowings.php -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('borrowingForm');
+    const tableBody = document.getElementById('borrowingTableBody');
+    const usersMap = new Map();
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      fetch('AddBorrowing.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          alert(res.message);
+          loadBorrowings();
+          form.reset();
+          document.getElementById('bookId').value = '';
+          document.getElementById('userId').value = '';
+        } else {
+          alert("Error: " + res.message);
+        }
+      })
+      .catch(err => {
+        console.error("Submission error:", err);
+        alert("An error occurred.");
       });
-  
-      function markReturned(button) {
-        const row = button.closest('tr');
-        const bookId = row.getAttribute('data-book-id');
-        const quantity = parseInt(row.getAttribute('data-quantity'));
-  
-        row.cells[6].textContent = 'Returned';
-        button.remove();
-        console.log(`Book ID ${bookId} returned. Add back quantity: ${quantity}`);
-      }
-  
-      function updateBookID() {
-        const bookSelect = document.getElementById("bookSelect");
-        const bookIdField = document.getElementById("bookId");
-        bookIdField.value = bookSelect.value;
-      }
-  
-      function fetchBooks() {
-        fetch("get_books.php?format=json")
-          .then(response => response.json())
-          .then(data => {
-            const bookSelect = document.getElementById("bookSelect");
-            bookSelect.innerHTML = `<option value="">-- Select a book --</option>`;
-            data.forEach(book => {
-              const option = document.createElement("option");
-              option.value = book.BookID;
-              option.text = book.Title;
-              bookSelect.appendChild(option);
-            });
-          })
-          .catch(error => {
-            console.error("Error loading books:", error);
-            const bookSelect = document.getElementById("bookSelect");
-            bookSelect.innerHTML = `<option value="">-- Failed to load books --</option>`;
-          });
-      }
-  
-      function fetchUsers() {
-        fetch("get_users.php")
-          .then(response => response.json())
-          .then(data => {
-            const datalist = document.getElementById("userList");
-            datalist.innerHTML = '';
-            data.forEach(user => {
-              const option = document.createElement("option");
-              option.value = user.FullName;
-              datalist.appendChild(option);
-              usersMap.set(user.FullName, user.UserID);
-            });
-          })
-          .catch(error => console.error("Error loading users:", error));
-      }
-  
-      function updateUserIDFromName() {
-        const nameInput = document.getElementById("userFullName").value;
-        const userIdField = document.getElementById("userId");
-        const userId = usersMap.get(nameInput) || "";
-        userIdField.value = userId;
-      }
-  
-      function loadBorrowings() {
-        fetch("get_borrowings.php")
-          .then(response => response.text())
-          .then(html => {
-            tableBody.innerHTML = html;
-          })
-          .catch(error => {
-            console.error("Error loading borrowings:", error);
-            tableBody.innerHTML = `<tr><td colspan="8">Failed to load borrowings.</td></tr>`;
-          });
-      }
-  
-      window.onload = function () {
-        fetchBooks();
-        fetchUsers();
+    });
+
+    function markReturned(borrowingId, bookId, quantity) {
+      const formData = new FormData();
+      formData.append("borrowingId", parseInt(borrowingId));
+      formData.append("bookId", parseInt(bookId));
+      formData.append("quantity", parseInt(quantity));
+    
+      fetch("ReturnBorrowing.php", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        alert(data.trim());
         loadBorrowings();
-      };
-    </script>
-  </body>
+      })
+      .catch(error => {
+        alert("Failed to return book.");
+        console.error(error);
+      });
+    }
+
+    function updateBookID() {
+      const bookSelect = document.getElementById("bookSelect");
+      const bookIdField = document.getElementById("bookId");
+      bookIdField.value = bookSelect.value;
+    }
+
+    function fetchBooks() {
+      fetch("get_books.php?format=json")
+        .then(response => response.json())
+        .then(data => {
+          const bookSelect = document.getElementById("bookSelect");
+          bookSelect.innerHTML = `<option value="">-- Select a book --</option>`;
+          data.forEach(book => {
+            const option = document.createElement("option");
+            option.value = book.BookID;
+            option.text = book.Title;
+            bookSelect.appendChild(option);
+          });
+        });
+    }
+
+    function fetchUsers() {
+      fetch("get_users.php")
+        .then(response => response.json())
+        .then(data => {
+          const datalist = document.getElementById("userList");
+          datalist.innerHTML = '';
+          data.forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.FullName;
+            datalist.appendChild(option);
+            usersMap.set(user.FullName, user.UserID);
+          });
+        });
+    }
+
+    function updateUserIDFromName() {
+      const nameInput = document.getElementById("userFullName").value;
+      const userIdField = document.getElementById("userId");
+      const userId = usersMap.get(nameInput) || "";
+      userIdField.value = userId;
+    }
+
+    function loadBorrowings() {
+      fetch("get_borrowings.php")
+        .then(response => response.text())
+        .then(html => {
+          tableBody.innerHTML = html;
+        })
+        .catch(error => {
+          console.error("Error loading borrowings:", error);
+          tableBody.innerHTML = `<tr><td colspan="8">Failed to load borrowings.</td></tr>`;
+        });
+    }
+
+    window.onload = function () {
+      fetchBooks();
+      fetchUsers();
+      loadBorrowings();
+    };
+  </script>
+</body>
 </html>
