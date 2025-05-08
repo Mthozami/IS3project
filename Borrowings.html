@@ -133,7 +133,7 @@
     <nav class="nav-links">
       <a href="AdminDashBoard.html">Dashboard</a>
       <a href="RegisterStudent.html">Manage Users</a>
-      <a href="#">Books</a>
+      <a href="AddBook.html">Books</a>
       <a href="#">Borrowings</a>
       <a href="#">Fines</a>
       <a href="#">Reports</a>
@@ -171,6 +171,10 @@
         <label for="returnDate">Return Date</label>
         <input type="date" id="returnDate" name="returnDate" required />
 
+        <!-- Hidden fields to store BookTitle and FullName -->
+        <input type="hidden" name="bookTitle" id="bookTitle">
+        <input type="hidden" name="fullName" id="fullName">
+
         <button type="submit">Add Borrowing</button>
       </form>
     </div>
@@ -181,7 +185,9 @@
         <thead>
           <tr>
             <th>Borrowing ID</th>
+            <th>Book Title</th>
             <th>Book ID</th>
+            <th>Full Name</th>
             <th>User ID</th>
             <th>Quantity</th>
             <th>Borrow Date</th>
@@ -204,36 +210,39 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+
+      // Set hidden fields before submission
+      const bookSelect = document.getElementById('bookSelect');
+      const userFullName = document.getElementById('userFullName').value;
+      document.getElementById('bookTitle').value = bookSelect.options[bookSelect.selectedIndex].text;
+      document.getElementById('fullName').value = userFullName;
+
       const formData = new FormData(form);
 
       fetch('AddBorrowing.php', {
         method: 'POST',
         body: formData
       })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) {
-          alert(res.message);
-          loadBorrowings();
-          form.reset();
-          document.getElementById('bookId').value = '';
-          document.getElementById('userId').value = '';
-        } else {
-          alert("Error: " + res.message);
-        }
+      .then(response => response.text())
+      .then(data => {
+        alert(data.trim());
+        form.reset();
+        document.getElementById('bookId').value = '';
+        document.getElementById('userId').value = '';
+        loadBorrowings();
       })
       .catch(err => {
-        console.error("Submission error:", err);
+        console.error("Error submitting form:", err);
         alert("An error occurred.");
       });
     });
 
     function markReturned(borrowingId, bookId, quantity) {
       const formData = new FormData();
-      formData.append("borrowingId", parseInt(borrowingId));
-      formData.append("bookId", parseInt(bookId));
-      formData.append("quantity", parseInt(quantity));
-    
+      formData.append("borrowingId", borrowingId);
+      formData.append("bookId", bookId);
+      formData.append("quantity", quantity);
+
       fetch("ReturnBorrowing.php", {
         method: "POST",
         body: formData
@@ -300,7 +309,7 @@
         })
         .catch(error => {
           console.error("Error loading borrowings:", error);
-          tableBody.innerHTML = `<tr><td colspan="8">Failed to load borrowings.</td></tr>`;
+          tableBody.innerHTML = `<tr><td colspan="10">Failed to load borrowings.</td></tr>`;
         });
     }
 

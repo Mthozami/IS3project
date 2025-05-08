@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 $userEmail = $_SESSION['email'];
 
 // Database connection
-$conn = new mysqli("localhost", "root", "Mzamoh@25", "LibraryDB");
+$conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
 if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }
