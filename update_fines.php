@@ -11,8 +11,9 @@ if ($conn->connect_error) {
   exit;
 }
 
+// Get overdue borrowings
 $overdueQuery = "
-  SELECT b.BorrowingID, b.BorrowedDate
+  SELECT b.BorrowingID, b.ReturnDate
   FROM Borrowings b
   LEFT JOIN Fines f ON b.BorrowingID = f.BorrowingID AND f.IsPaid = 0
   WHERE b.Status = 'borrowed' AND b.ReturnDate < CURDATE()
@@ -22,9 +23,9 @@ $overdueResult = $conn->query($overdueQuery);
 if ($overdueResult && $overdueResult->num_rows > 0) {
   while ($row = $overdueResult->fetch_assoc()) {
     $borrowingID = $row["BorrowingID"];
-    $dueDate = new DateTime($row["BorrowedDate"]);
+    $returnDate = new DateTime($row["ReturnDate"]);
     $today = new DateTime();
-    $daysOverdue = $dueDate->diff($today)->days;
+    $daysOverdue = $returnDate->diff($today)->days;
     $amount = 25 * $daysOverdue;
 
     $check = $conn->query("SELECT FineID FROM Fines WHERE BorrowingID = $borrowingID AND IsPaid = 0");

@@ -95,30 +95,6 @@
       font-weight: bold;
     }
 
-    .action-btn {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .pay-btn {
-      background-color: #27ae60;
-      color: white;
-    }
-
-    .edit-btn {
-      background-color: #f39c12;
-      color: white;
-    }
-
-    .delete-btn {
-      background-color: #e74c3c;
-      color: white;
-    }
-
     .footer {
       background-color: #2c3e50;
       color: white;
@@ -130,105 +106,89 @@
 </head>
 <body>
 
-  <header class="navbar">
-    <div class="logo">📚 Admin Dashboard</div>
-    <nav class="nav-links">
-      <a href="AdminDashBoard.html">Dashboard</a>
-      <a href="RegisterStudent.html">Manage Users</a>
-      <a href="AddBook.html">Books</a>
-      <a href="Borrowings.html">Borrowings</a>
-      <a href="Fines.html">Fines</a>
-      <a href="#">Reports</a>
-      <button class="logout-btn">Logout</button>
-    </nav>
-  </header>
+<header class="navbar">
+  <div class="logo">📚 Admin Dashboard</div>
+  <nav class="nav-links">
+    <a href="AdminDashBoard.html">Dashboard</a>
+    <a href="RegisterStudent.html">Manage Users</a>
+    <a href="AddBook.html">Books</a>
+    <a href="Borrowings.html">Borrowings</a>
+    <a href="Fines.html">Fines</a>
+    <a href="#">Reports</a>
+    <button class="logout-btn">Logout</button>
+  </nav>
+</header>
 
-  <main>
-    <h1>Manage Fines</h1>
-    <p class="subheading">Review, adjust, and mark fines as paid.</p>
+<main>
+  <h1>Manage Fines</h1>
+  <p class="subheading">Review unpaid and paid fines. Marking will be implemented later.</p>
 
-    <!-- Unpaid Fines Table -->
-    <section>
-      <h2>Unpaid Fines</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Fine ID</th>
-            <th>Borrowing ID</th>
-            <th>User ID</th>
-            <th>Book ID</th>
-            <th>Amount (R)</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="unpaidFinesBody">
-          <!-- Rows will be loaded dynamically from PHP -->
-        </tbody>
-      </table>
-    </section>
+  <!-- Unpaid Fines -->
+  <section>
+    <h2>Unpaid Fines</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Fine ID</th>
+          <th>Borrowing ID</th>
+          <th>User ID</th>
+          <th>Book ID</th>
+          <th>Amount (R)</th>
+          <th>Status</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody id="unpaidFinesBody">
+        <!-- Fetched via get_fines.php -->
+      </tbody>
+    </table>
+  </section>
 
-    <!-- Paid Fines Table -->
-    <section>
-      <h2>Paid Fines History</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Fine ID</th>
-            <th>Borrowing ID</th>
-            <th>User ID</th>
-            <th>Book ID</th>
-            <th>Amount (R)</th>
-            <th>Paid On</th>
-          </tr>
-        </thead>
-        <tbody id="paidFinesBody">
-          <!-- Rows will be loaded dynamically -->
-        </tbody>
-      </table>
-    </section>
-  </main>
+  <!-- Paid Fines -->
+  <section>
+    <h2>Paid Fines</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Fine ID</th>
+          <th>Borrowing ID</th>
+          <th>User ID</th>
+          <th>Book ID</th>
+          <th>Amount (R)</th>
+          <th>Status</th>
+          <th>Paid On</th>
+        </tr>
+      </thead>
+      <tbody id="paidFinesBody">
+        <!-- Fetched via get_fines.php -->
+      </tbody>
+    </table>
+  </section>
+</main>
 
-  <footer class="footer">
-    <p>&copy; 2025 Uni Library System. All rights reserved.</p>
-  </footer>
+<footer class="footer">
+  <p>&copy; 2025 Uni Library System. All rights reserved.</p>
+</footer>
 
-  <script>
-    window.onload = function () {
-      fetch("update_fines.php")
-        .then(() => fetch("get_fines.php"))
-        .then(res => res.text())
-        .then(html => {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = `<table><tbody>${html}</tbody></table>`;
-          const allRows = tempDiv.querySelectorAll("tr");
+<script>
+  function loadFines() {
+    // Load unpaid fines
+    fetch("get_fines.php?status=unpaid")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("unpaidFinesBody").innerHTML = html;
+      });
 
-          allRows.forEach(row => {
-            const cells = row.querySelectorAll("td");
-            const statusCell = cells[5];
-            if (statusCell && statusCell.innerHTML.includes("Unpaid")) {
-              document.getElementById("unpaidFinesBody").appendChild(row);
-            } else {
-              const paidRow = document.createElement("tr");
-              paidRow.innerHTML = `
-                <td>${cells[0].innerHTML}</td>
-                <td>${cells[1].innerHTML}</td>
-                <td>${cells[2].innerHTML}</td>
-                <td>${cells[3].innerHTML}</td>
-                <td>${cells[4].innerHTML}</td>
-                <td>${cells[6].innerHTML}</td>
-              `;
-              document.getElementById("paidFinesBody").appendChild(paidRow);
-            }
-          });
-        })
-        .catch(err => {
-          console.error("Failed to load fines:", err);
-          document.getElementById("unpaidFinesBody").innerHTML =
-            "<tr><td colspan='8'>Error loading fines data.</td></tr>";
-        });
-    };
-  </script>
+    // Load paid fines
+    fetch("get_fines.php?status=paid")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("paidFinesBody").innerHTML = html;
+      });
+  }
+
+  window.onload = loadFines;
+</script>
+
 </body>
 </html>

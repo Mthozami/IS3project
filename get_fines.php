@@ -12,6 +12,8 @@ if ($conn->connect_error) {
   exit;
 }
 
+$status = isset($_GET["status"]) && $_GET["status"] === "paid" ? 1 : 0;
+
 $sql = "
   SELECT 
     f.FineID,
@@ -20,11 +22,10 @@ $sql = "
     f.CreatedAt,
     b.BorrowingID,
     b.UserID,
-    b.BookID,
-    b.FullName,
-    b.BookTitle
+    b.BookID
   FROM Fines f
   JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
+  WHERE f.IsPaid = $status
   ORDER BY f.FineID DESC
 ";
 
@@ -44,11 +45,6 @@ while ($row = $result->fetch_assoc()) {
   echo "<td>R" . htmlspecialchars($row["Amount"]) . "</td>";
   echo "<td>" . $paidStatus . "</td>";
   echo "<td>" . htmlspecialchars($row["CreatedAt"]) . "</td>";
-  echo "<td>
-          <button class='pay-btn'>Mark as Paid</button>
-          <button class='edit-btn'>Adjust</button>
-          <button class='delete-btn'>Cancel</button>
-        </td>";
   echo "</tr>";
 }
 
