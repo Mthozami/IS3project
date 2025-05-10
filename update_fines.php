@@ -11,32 +11,37 @@ if ($conn->connect_error) {
   exit;
 }
 
-// Get overdue borrowings
-$overdueQuery = "
-  SELECT b.BorrowingID, b.ReturnDate
+$query = "
+  SELECT b.BorrowingID, b.ReturnDate, u.FullName, bk.Title AS BookTitle
   FROM Borrowings b
+  JOIN Users u ON b.UserID = u.UserID
+  JOIN Books bk ON b.BookID = bk.BookID
   LEFT JOIN Fines f ON b.BorrowingID = f.BorrowingID AND f.IsPaid = 0
-  WHERE b.Status = 'borrowed' AND b.ReturnDate < CURDATE()
+  WHERE b.Status = 'borrowed' AND b.ReturnDate <= CURDATE()
 ";
 
-$overdueResult = $conn->query($overdueQuery);
-if ($overdueResult && $overdueResult->num_rows > 0) {
-  while ($row = $overdueResult->fetch_assoc()) {
+$result = $conn->query($query);
+if ($result && $result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
     $borrowingID = $row["BorrowingID"];
     $returnDate = new DateTime($row["ReturnDate"]);
     $today = new DateTime();
     $daysOverdue = $returnDate->diff($today)->days;
-    $amount = 25 * $daysOverdue;
 
-    $check = $conn->query("SELECT FineID FROM Fines WHERE BorrowingID = $borrowingID AND IsPaid = 0");
-    if ($check->num_rows > 0) {
-      $conn->query("UPDATE Fines SET Amount = $amount WHERE BorrowingID = $borrowingID AND IsPaid = 0");
-    } else {
-      $conn->query("INSERT INTO Fines (BorrowingID, Amount) VALUES ($borrowingID, $amount)");
+    if ($daysOverdue > 0) {
+      $amount = 25 * $daysOverdue;
+      $exists = $conn->query("SELECT FineID FROM Fines WHERE BorrowingID = $borrowingID AND IsPaid = 0");
+
+      if ($exists && $exists->num_rows > 0) {
+        $conn->query("UPDATE Fines SET Amount = $amount WHERE BorrowingID = $borrowingID AND IsPaid = 0");
+      } else {
+        $stmt = $conn->prepare("INSERT INTO Fines (BorrowingID, Amount, FullName, BookTitle) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("idss", $borrowingID, $amount, $row["FullName"], $row["BookTitle"]);
+        $stmt->execute();
+      }
     }
   }
 }
 
 $conn->close();
 echo "Fines updated.";
-?>
