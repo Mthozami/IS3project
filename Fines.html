@@ -145,7 +145,7 @@
         </tr>
       </thead>
       <tbody id="unpaidFinesBody">
-        <!-- Loaded via get_fines.php -->
+        <!-- Rows loaded from get_fines.php -->
       </tbody>
     </table>
   </section>
@@ -175,7 +175,7 @@
             .then(res => res.text())
             .then(response => {
               alert(response);
-              loadFines();
+              loadFines(); // Refreshes the table to reflect updated statuses
             })
             .catch(err => {
               alert("Error processing payment.");
