@@ -20,7 +20,6 @@
       min-height: 100vh;
     }
 
-    /* NAVBAR */
     .navbar {
       background-color: #34495e;
       color: white;
@@ -68,7 +67,6 @@
       background-color: #c0392b;
     }
 
-    /* MAIN DASHBOARD */
     .dashboard {
       padding: 40px 30px;
       flex: 1;
@@ -115,7 +113,6 @@
       font-weight: bold;
     }
 
-    /* QUICK ACTIONS */
     .quick-actions h2 {
       margin-bottom: 15px;
       font-size: 1.4rem;
@@ -143,81 +140,84 @@
     .action-buttons button:hover {
       background-color: #3a579d;
     }
-
-    /* FOOTER */
-    
   </style>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <header class="navbar">
-    <div class="logo">📚 Admin Dashboard</div>
-    <nav class="nav-links">
-      <a href="AdminDashBoard.html">Dashboard</a>
-      <a href="RegisterStudent.html">Manage Users</a> <!-- Ensure this file exists and matches this exact name -->
-      <a href="AddBook.html">Books</a>
-      <a href="Borrowings.html">Borowings</a>
-      <a href="Fines.html">Fines</a>
-      <a href="Transactions.html">Transactions</a>
-      <button class="logout-btn" onclick="confirmLogout()">Logout</button>
-    </nav>
-  </header>
+<header class="navbar">
+  <div class="logo">📚 Admin Dashboard</div>
+  <nav class="nav-links">
+    <a href="AdminDashBoard.html">Dashboard</a>
+    <a href="RegisterStudent.html">Manage Users</a>
+    <a href="AddBook.html">Books</a>
+    <a href="Borrowings.html">Borrowings</a>
+    <a href="Fines.html">Fines</a>
+    <a href="Transactions.html">Transactions</a>
+    <button class="logout-btn" onclick="confirmLogout()">Logout</button>
+  </nav>
+</header>
 
-  <!-- Dashboard Content -->
-  <main class="dashboard">
-    <h1>Welcome, Admin 👋</h1>
-    <p class="subheading">Here’s what’s happening in your library today</p>
+<main class="dashboard">
+  <h1>Welcome, Admin 👋</h1>
+  <p class="subheading">Here’s what’s happening in your library today</p>
 
-    <section class="cards">
-      <div class="card">
-        <h3>Total Students</h3>
-        <p>📌 240 registered</p>
-      </div>
-      <div class="card">
-        <h3>Total Books</h3>
-        <p>📚 1,200 in library</p>
-      </div>
-      <div class="card">
-        <h3>Books Borrowed</h3>
-        <p>📦 75 currently borrowed</p>
-      </div>
-      <div class="card">
-        <h3>Overdue Books</h3>
-        <p>⏰ 8 overdue</p>
-      </div>
-      <div class="card">
-        <h3>Fines Collected</h3>
-        <p>💰 R1455 collected</p>
-      </div>
-    </section>
+  <section class="cards">
+    <div class="card">
+      <h3>Total Students</h3>
+      <p id="studentsCount">Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Total Books</h3>
+      <p id="booksCount">Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Books Borrowed</h3>
+      <p id="borrowedCount">Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Overdue Books</h3>
+      <p id="overdueCount">Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Fines Collected</h3>
+      <p id="finesCount">Loading...</p>
+    </div>
+  </section>
 
-    <section class="quick-actions">
-      <h2>Quick Admin Actions</h2>
-      <div class="action-buttons">
-        <a href="AddBook.html"><button>Add New Book</button></a>
-        <a href="RegisterStudent.html"><button>View Users</button></a>
-        <a href="Borrowings.html"><button>Check Borrowed</button></a>
-        <a href="Fines.html"><button>See All Fines</button></a>
-</div>
+  <section class="quick-actions">
+    <h2>Quick Admin Actions</h2>
+    <div class="action-buttons">
+      <a href="AddBook.html"><button>Add New Book</button></a>
+      <a href="RegisterStudent.html"><button>View Users</button></a>
+      <a href="Borrowings.html"><button>Check Borrowed</button></a>
+      <a href="Fines.html"><button>See All Fines</button></a>
+    </div>
+  </section>
+</main>
 
-    </section>
-  </main>
-
-  <!-- Footer -->
- 
 <script>
   function confirmLogout() {
-    // Show a confirmation popup
     const userConfirmed = confirm("Are you sure you want to log out?");
-    
-    // If the user clicks "OK" (Yes)
     if (userConfirmed) {
-      // Redirect to home.html
       window.location.href = "home.html";
     }
-    // If they click "Cancel", do nothing (stay on the page)
   }
+
+  function fetchStats() {
+    fetch("get_dashboard_stats.php")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("studentsCount").innerText = `📌 ${data.totalStudents} registered`;
+        document.getElementById("booksCount").innerText = `📚 ${data.totalBooks} in library`;
+        document.getElementById("borrowedCount").innerText = `📦 ${data.borrowedBooks} currently borrowed`;
+        document.getElementById("overdueCount").innerText = `⏰ ${data.overdueBooks} overdue`;
+        document.getElementById("finesCount").innerText = `💰 R${data.finesCollected}`;
+      })
+      .catch(err => console.error("Failed to fetch dashboard stats:", err));
+  }
+
+  window.onload = fetchStats;
 </script>
+
 </body>
 </html>
