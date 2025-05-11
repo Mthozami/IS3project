@@ -14,6 +14,7 @@
       flex-direction: column;
       min-height: 100vh;
     }
+
     .navbar {
       background-color: #34495e;
       color: white;
@@ -22,19 +23,23 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .logo {
       font-size: 1.5rem;
       font-weight: bold;
     }
+
     .nav-links {
       display: flex;
       gap: 20px;
     }
+
     .nav-links a {
       color: white;
       text-decoration: none;
       font-weight: 500;
     }
+
     .logout-btn {
       background-color: #e74c3c;
       border: none;
@@ -44,18 +49,22 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     main {
       padding: 30px;
       flex-grow: 1;
     }
+
     h1 {
       font-size: 1.8rem;
       margin-bottom: 5px;
     }
+
     .subheading {
       color: #666;
       margin-bottom: 20px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -64,17 +73,21 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       margin-bottom: 30px;
     }
+
     table thead {
       background-color: #4b6cb7;
       color: white;
     }
+
     th, td {
       padding: 14px;
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
+
     .unpaid { color: #e74c3c; font-weight: bold; }
     .paid { color: #2ecc71; font-weight: bold; }
+
     .pay-btn, .edit-btn, .delete-btn {
       padding: 5px 10px;
       border: none;
@@ -83,9 +96,11 @@
       font-weight: bold;
       margin-right: 5px;
     }
+
     .pay-btn { background-color: #27ae60; color: white; }
     .edit-btn { background-color: #f39c12; color: white; }
     .delete-btn { background-color: #e74c3c; color: white; }
+
     .footer {
       background-color: #2c3e50;
       color: white;
@@ -105,17 +120,17 @@
     <a href="AddBook.html">Books</a>
     <a href="Borrowings.html">Borrowings</a>
     <a href="Fines.html">Fines</a>
-    <a href="#">Reports</a>
+    <a href="Transactions.html">Transactions</a>
     <button class="logout-btn">Logout</button>
   </nav>
 </header>
 
 <main>
   <h1>Manage Fines</h1>
-  <p class="subheading">Review unpaid and paid fines.</p>
+  <p class="subheading">Review and mark unpaid fines as paid.</p>
 
   <section>
-    <h2>Unpaid Fines</h2>
+    <h2>Fines</h2>
     <table>
       <thead>
         <tr>
@@ -129,25 +144,9 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="unpaidFinesBody"></tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>Paid Fines</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Fine ID</th>
-          <th>Borrowing ID</th>
-          <th>Full Name</th>
-          <th>Book Title</th>
-          <th>Amount (R)</th>
-          <th>Status</th>
-          <th>Paid On</th>
-        </tr>
-      </thead>
-      <tbody id="paidFinesBody"></tbody>
+      <tbody id="unpaidFinesBody">
+        <!-- Loaded via get_fines.php -->
+      </tbody>
     </table>
   </section>
 </main>
@@ -159,35 +158,36 @@
 <script>
   function loadFines() {
     fetch("get_fines.php")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("unpaidFinesBody").innerHTML = data.unpaid;
-        document.getElementById("paidFinesBody").innerHTML = data.paid;
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("unpaidFinesBody").innerHTML = html;
 
         document.querySelectorAll(".pay-btn").forEach(button => {
           button.addEventListener("click", () => {
             const fineID = button.getAttribute("data-fine-id");
-            fetch("mark_fine_paid.php", {
+            if (!confirm("Mark this fine as paid?")) return;
+
+            fetch("MarkFinePaid.php", {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: "FineID=" + encodeURIComponent(fineID)
+              body: "fineID=" + encodeURIComponent(fineID)
             })
             .then(res => res.text())
             .then(response => {
-              alert("Fine marked as paid successfully.");
+              alert(response);
               loadFines();
             })
-            .catch(err => console.error("Failed to mark fine as paid:", err));
+            .catch(err => {
+              alert("Error processing payment.");
+              console.error(err);
+            });
           });
         });
-      })
-      .catch(err => console.error("Failed to load fines:", err));
+      });
   }
 
   window.onload = function () {
-    fetch("update_fines.php")
-      .then(() => loadFines())
-      .catch(err => console.error("Fine update failed:", err));
+    fetch("update_fines.php").then(() => loadFines());
   };
 </script>
 
