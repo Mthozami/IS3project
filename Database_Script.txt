@@ -26,34 +26,42 @@ CREATE TABLE Books (
 -- Borrowings Table
 CREATE TABLE Borrowings (
     BorrowingID INT AUTO_INCREMENT PRIMARY KEY,
+    FullName VARCHAR(255) NOT NULL,
     UserID INT NOT NULL,
+    BookTitle VARCHAR(255) NOT NULL,
     BookID INT NOT NULL,
     Quantity INT DEFAULT 1,
     BorrowedDate DATE NOT NULL,
-    DueDate DATE NOT NULL,
-    Returned BOOLEAN DEFAULT FALSE,
-    ReturnedDate DATE,
+    Status ENUM('borrowed', 'returned') DEFAULT 'borrowed',
+    ReturnDate DATE NOT NULL,
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (BookID) REFERENCES Books(BookID) ON DELETE CASCADE,
     INDEX idx_user_book (UserID, BookID)
 );
+
+-- Add some columns on Borrowings table
+
+
 
 -- Fines Table
 CREATE TABLE Fines (
     FineID INT AUTO_INCREMENT PRIMARY KEY,
     BorrowingID INT NOT NULL,
     Amount DECIMAL(10,2) NOT NULL,
+    FullName VARCHAR(255) NOT NULL,
+    BookTitle VARCHAR(255) NOT NULL,
     IsPaid BOOLEAN DEFAULT FALSE,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (BorrowingID) REFERENCES Borrowings(BorrowingID) ON DELETE CASCADE,
     INDEX idx_fine_borrowing (BorrowingID)
 );
 
+
 -- Transactions Table
 CREATE TABLE Transactions (
     TransactionID INT AUTO_INCREMENT PRIMARY KEY,
     FineID INT NOT NULL,
-    ReceiptNumber VARCHAR(50) NOT NULL,
+    ReceiptNumber VARCHAR(50) NOT NULL UNIQUE,
     PaymentDate DATETIME NOT NULL,
     PaidAmount DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (FineID) REFERENCES Fines(FineID) ON DELETE CASCADE,
@@ -94,9 +102,33 @@ TRUNCATE Users;
 -- check if books added in a database
 select* from Books;
 
+-- check if borrowing is added successfully.
+select* from Borrowings;
+
+-- Delete in Borrowings table for the second test
+delete from Borrowings where BorrowingID=2;
+
 -- Drop the database to reset index in the table 
 DROP DATABASE LibraryDB;
 
--- DROP TABLE Books;
+-- Test fines working by inserting sample data in borrowings and fines table 
+
+DELETE FROM Borrowings Where BorrowingID=6;
+
+
+
+
+DELETE FROM Fines Where FineID=1;
+
+-- view fines table
+select *from Fines;
+
+
+INSERT INTO Borrowings (UserID, BookID, BorrowDate, ReturnDate, Status)
+VALUES
+  (1, 101, '2025-04-01', '2025-04-08', NULL, 'Borrowed');
+
+-- View Transactions
+select* from Transactions;
  
 
