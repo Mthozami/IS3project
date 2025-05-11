@@ -20,7 +20,7 @@ $sql = "
   FROM Transactions t
   JOIN Fines f ON t.FineID = f.FineID
   JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
-  ORDER BY t.PaymentDate DESC
+  ORDER BY t.PaymentDate ASC
 ";
 
 $result = $conn->query($sql);

@@ -3,8 +3,8 @@ header("Content-Type: text/html");
 
 $conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
 if ($conn->connect_error) {
-    echo "<tr><td colspan='8'>Database connection failed.</td></tr>";
-    exit;
+  echo "<tr><td colspan='8'>Database connection failed.</td></tr>";
+  exit;
 }
 
 $sql = "
@@ -17,37 +17,28 @@ $sql = "
 ";
 
 $result = $conn->query($sql);
-
 if (!$result || $result->num_rows === 0) {
-    echo "<tr><td colspan='8'>No fines found.</td></tr>";
-    exit;
+  echo "<tr><td colspan='8'>No fines found.</td></tr>";
+  exit;
 }
 
 while ($row = $result->fetch_assoc()) {
-    $isPaid = $row["IsPaid"];
-    $statusText = $isPaid ? "Paid" : "Unpaid";
-    $statusClass = $isPaid ? "paid" : "unpaid";
+  $status = $row["IsPaid"] ? "<span class='paid'>Paid</span>" : "<span class='unpaid'>Unpaid</span>";
+  $actions = $row["IsPaid"] ? "-" : "
+    <button class='pay-btn' data-fine-id='{$row["FineID"]}'>Mark as Paid</button>
+    <button class='edit-btn' data-fine-id='{$row["FineID"]}'>Adjust</button>
 
-    echo "<tr>";
-    echo "<td>" . htmlspecialchars($row["FineID"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["BorrowingID"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["FullName"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["BookTitle"]) . "</td>";
-    echo "<td>R" . htmlspecialchars($row["Amount"]) . "</td>";
-    echo "<td class='$statusClass'>$statusText</td>";
-    echo "<td>" . htmlspecialchars($row["CreatedAt"]) . "</td>";
-
-    if (!$isPaid) {
-        echo "<td>
-            <button class='pay-btn' data-fine-id='" . $row["FineID"] . "'>Mark as Paid</button>
-            <button class='edit-btn'>Adjust</button>
-            <button class='delete-btn'>Cancel</button>
-        </td>";
-    } else {
-        echo "<td>-</td>";
-    }
-
-    echo "</tr>";
+  ";
+  echo "<tr>
+          <td>{$row["FineID"]}</td>
+          <td>{$row["BorrowingID"]}</td>
+          <td>{$row["FullName"]}</td>
+          <td>{$row["BookTitle"]}</td>
+          <td>R" . number_format($row["Amount"], 2) . "</td>
+          <td>$status</td>
+          <td>{$row["CreatedAt"]}</td>
+          <td>$actions</td>
+        </tr>";
 }
 
 $conn->close();
