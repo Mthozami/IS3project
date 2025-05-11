@@ -115,9 +115,9 @@
       <a href="RegisterStudent.html">Manage Users</a>
       <a href="AddBook.html">Books</a>
       <a href="Borrowings.html">Borrowing</a>
-      <a href="#">Fines</a>
-      <a href="#">Reports</a>
-      <button class="logout-btn">Logout</button>
+      <a href="Fines.html">Fines</a>
+      <a href="Transactions.html">Transactions</a>
+      <button class="logout-btn" onclick="confirmLogout()">Logout</button>
     </nav>
   </header>
 
@@ -268,5 +268,18 @@
       renderTable(filtered);
     }
   </script>
+  <script>
+  function confirmLogout() {
+    // Show a confirmation popup
+    const userConfirmed = confirm("Are you sure you want to log out?");
+    
+    // If the user clicks "OK" (Yes)
+    if (userConfirmed) {
+      // Redirect to home.html
+      window.location.href = "home.html";
+    }
+    // If they click "Cancel", do nothing (stay on the page)
+  }
+</script>
 </body>
 </html>

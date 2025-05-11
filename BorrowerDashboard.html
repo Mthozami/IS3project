@@ -148,18 +148,19 @@
   <header class="top-navbar">
     <div class="logo">📚 Siza Library</div>
     <nav class="nav-links">
-      <a href="#" class="active">Dashboard</a>
+      <a href="BorrowerDashboard.html" class="active">Dashboard</a>
       <a href="MyBorrowings.html">My Borrowings</a>
       <a href="#">My Fines</a>
       <a href="#">Profile</a>
-      <a href="#" class="logout-link">Logout</a>
+     <button class="logout-btn" onclick="confirmLogout()">Logout</button>
+      
     </nav>
   </header>
 
   <!-- Main Dashboard Content -->
   <main class="dashboard-main">
     <section class="welcome-section">
-      <h1>Welcome, Thandi 👋</h1>
+      <h1>Welcome👋</h1>
       <p>Here’s a summary of your borrowing activity</p>
     </section>
 
@@ -201,14 +202,17 @@
 
   <!-- Optional JS -->
   <script>
-    // Example: Confirm logout
-    document.querySelector('.logout-link').addEventListener('click', function(event) {
-      event.preventDefault();
-      if (confirm("Are you sure you want to logout?")) {
-        // Redirect or handle logout
-        alert("Logged out successfully.");
-      }
-    });
-  </script>
+  function confirmLogout() {
+    // Show a confirmation popup
+    const userConfirmed = confirm("Are you sure you want to log out?");
+    
+    // If the user clicks "OK" (Yes)
+    if (userConfirmed) {
+      // Redirect to home.html
+      window.location.href = "home.html";
+    }
+    // If they click "Cancel", do nothing (stay on the page)
+  }
+</script>
 </body>
 </html>

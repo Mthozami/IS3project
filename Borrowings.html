@@ -11,7 +11,16 @@
       padding: 0;
       background-color: #f4f6f8;
     }
-
+     .logout-btn {
+      background-color: #e74c3c;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
     .navbar {
       background-color: #2c3e50;
       color: white;
@@ -134,10 +143,10 @@
       <a href="AdminDashBoard.html">Dashboard</a>
       <a href="RegisterStudent.html">Manage Users</a>
       <a href="AddBook.html">Books</a>
-      <a href="#">Borrowings</a>
+      <a href="Borrowings.html">Borrowings</a>
       <a href="Fines.html">Fines</a>
-      <a href="#">Reports</a>
-      <button class="logout-btn">Logout</button>
+      <a href="Transactions.html">Transactions</a>
+     <button class="logout-btn" onclick="confirmLogout()">Logout</button>
     </nav>
   </header>
 
@@ -319,5 +328,18 @@
       loadBorrowings();
     };
   </script>
+  <script>
+  function confirmLogout() {
+    // Show a confirmation popup
+    const userConfirmed = confirm("Are you sure you want to log out?");
+    
+    // If the user clicks "OK" (Yes)
+    if (userConfirmed) {
+      // Redirect to home.html
+      window.location.href = "home.html";
+    }
+    // If they click "Cancel", do nothing (stay on the page)
+  }
+</script>
 </body>
 </html>
