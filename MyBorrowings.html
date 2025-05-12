@@ -72,13 +72,7 @@
       background-color: #ecf0f1;
     }
 
-    .footer {
-      background-color: #0a1a3f;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      margin-top: 20px;
-    }
+    
   </style>
 </head>
 <body>
@@ -87,38 +81,53 @@
     <div class="logo">📚 Siza Library</div>
     <nav class="nav-links">
       <a href="BorrowerDashboard.html">Dashboard</a>
-      <a href="MyBorrowings.php">My Borrowings</a>
+      <a href="MyBorrowings.html">My Borrowings</a>
       <a href="#">My Fines</a>
       <a href="#">Profile</a>
       <button class="logout-btn" onclick="confirmLogout()">Logout</button>
     </nav>
   </header>
 
-  <h1>My Borrowings</h1>
+  
 
-  <div class="container">
+  <main>
+  <h1>My Borrowings</h1>
+  
+
+  <section>
+   
     <table>
       <thead>
         <tr>
-          <th>Borrowing ID</th>
           <th>Book Title</th>
           <th>Quantity</th>
-          <th>Borrow Date</th>
-          <th>Return Date</th>
-          <th>Status</th>
+          <th>Date Borrowed</th>
+          <th>Due Date</th>
+          <th>Return Status</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Dynamic PHP rows inserted here -->
-        <?php echo $rowsHtml; ?>
-      </tbody>
+      <tbody id="borrowingsTableBody"></tbody>
     </table>
-  </div>
+  </section>
+</main>
+<script>
+  window.onload = function () {
+    fetch("MyBorrowings.php")
+      .then(response => response.text())
+      .then(html => {
+        // Load the returned rows into the borrowings table body
+        document.getElementById("borrowingsTableBody").innerHTML = html;
+      })
+      .catch(err => {
+        // Show a fallback row if data fails to load
+        document.getElementById("borrowingsTableBody").innerHTML =
+          "<tr><td colspan='4'>Failed to load borrowings.</td></tr>";
+      });
+  };
+</script>
 
-  <footer class="footer">
-    <p>© 2025 Uni Library System. All rights reserved.</p>
-    <p>Contact: help@unilibrary.com | +123 456 7890</p>
-  </footer>
+
+  
 </body>
 <script>
   function confirmLogout() {
