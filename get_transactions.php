@@ -1,5 +1,4 @@
 <?php
-// get_transactions.php
 header("Content-Type: text/html");
 
 $conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
@@ -15,11 +14,13 @@ $sql = "
     t.ReceiptNumber,
     t.PaymentDate,
     t.PaidAmount,
-    b.FullName,
-    b.BookTitle
+    u.FullName,
+    bk.Title AS BookTitle
   FROM Transactions t
   JOIN Fines f ON t.FineID = f.FineID
   JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
+  JOIN Users u ON b.UserID = u.UserID
+  JOIN Books bk ON b.BookID = bk.BookID
   ORDER BY t.PaymentDate ASC
 ";
 
@@ -36,7 +37,7 @@ while ($row = $result->fetch_assoc()) {
   echo "<td>" . htmlspecialchars($row["FullName"]) . "</td>";
   echo "<td>" . htmlspecialchars($row["BookTitle"]) . "</td>";
   echo "<td>" . htmlspecialchars($row["ReceiptNumber"]) . "</td>";
-  echo "<td>R" . htmlspecialchars($row["PaidAmount"]) . "</td>";
+  echo "<td>R" . number_format($row["PaidAmount"], 2) . "</td>";
   echo "<td>" . htmlspecialchars($row["PaymentDate"]) . "</td>";
   echo "</tr>";
 }

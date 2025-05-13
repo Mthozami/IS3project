@@ -10,9 +10,13 @@ if ($conn->connect_error) {
 $sql = "
   SELECT 
     f.FineID, f.Amount, f.IsPaid, f.CreatedAt,
-    b.BorrowingID, b.FullName, b.BookTitle
+    b.BorrowingID,
+    u.FullName,
+    bk.Title AS BookTitle
   FROM Fines f
   JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
+  JOIN Users u ON b.UserID = u.UserID
+  JOIN Books bk ON b.BookID = bk.BookID
   ORDER BY f.FineID ASC
 ";
 
@@ -27,7 +31,6 @@ while ($row = $result->fetch_assoc()) {
   $actions = $row["IsPaid"] ? "-" : "
     <button class='pay-btn' data-fine-id='{$row["FineID"]}'>Mark as Paid</button>
     <button class='edit-btn' data-fine-id='{$row["FineID"]}'>Adjust</button>
-
   ";
   echo "<tr>
           <td>{$row["FineID"]}</td>
