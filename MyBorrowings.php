@@ -1,44 +1,32 @@
 <?php
-header("Content-Type: text/html");
+$host = "localhost";
+$username = "root";
+$password = "Mthozami@2004";
+$dbname = "LibraryDB";
 
-// No session needed if not filtering by user
-// session_start();
-
-// Connect to database
-$conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
+$conn = new mysqli($host, $username, $password, $dbname);
 if ($conn->connect_error) {
-    echo "<tr><td colspan='5'>Connection failed.</td></tr>";
-    exit;
+  die("Connection failed: " . $conn->connect_error);
 }
 
-// Query ALL borrowings
-$sql = "
-  SELECT 
-    BookTitle,
-    Quantity,
-    BorrowedDate,
-    ReturnDate,
-    Status
-  FROM Borrowings
-  ORDER BY BorrowedDate DESC
-";
+$sql = "SELECT b.Title, br.Quantity, br.BorrowedDate, br.ReturnDate
+        FROM Borrowings br
+        INNER JOIN Books b ON br.BookID = b.BookID";
 
 $result = $conn->query($sql);
 
-if (!$result || $result->num_rows === 0) {
-    echo "<tr><td colspan='5'>No borrowings found.</td></tr>";
-    exit;
-}
-
-// Output table rows
-while ($row = $result->fetch_assoc()) {
+if ($result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
     echo "<tr>";
-    echo "<td>" . htmlspecialchars($row["BookTitle"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["Quantity"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["BorrowedDate"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["ReturnDate"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["Status"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row['Title']) . "</td>";
+    echo "<td>" . htmlspecialchars($row['Quantity']) . "</td>";
+    echo "<td>" . htmlspecialchars($row['BorrowedDate']) . "</td>";
+    echo "<td>" . ($row['ReturnDate'] ? htmlspecialchars($row['ReturnDate']) : 'Not Returned') . "</td>";
+    echo "<td>" . ($row['ReturnDate'] ? 'Returned' : 'Not Returned') . "</td>";
     echo "</tr>";
+  }
+} else {
+  echo "<tr><td colspan='5'>No borrowings found.</td></tr>";
 }
 
 $conn->close();
