@@ -20,7 +20,7 @@ try {
             ReturnDate,
             Status
         FROM Borrowings
-        ORDER BY BorrowingID ASC
+        ORDER BY BorrowingID DESC
     ");
     $stmt->execute();
     $borrowings = $stmt->fetchAll(PDO::FETCH_ASSOC);
