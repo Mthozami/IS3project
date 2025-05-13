@@ -11,7 +11,7 @@
       padding: 0;
       background-color: #f4f6f8;
     }
-     .logout-btn {
+    .logout-btn {
       background-color: #e74c3c;
       color: white;
       padding: 10px 18px;
@@ -29,37 +29,22 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .logo {
       font-size: 20px;
       font-weight: bold;
     }
-
     .nav-links a {
       color: white;
       margin-left: 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
-    .logout-btn {
-      background-color: #e74c3c;
-      border: none;
-      padding: 8px 15px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     h1 {
       text-align: center;
       margin-top: 30px;
       color: #2c3e50;
     }
-
     .container {
-      display: flex;
-      flex-direction: column;
       max-width: 1000px;
       margin: 30px auto;
       padding: 20px;
@@ -67,22 +52,18 @@
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
     .borrowing-form {
       margin-bottom: 30px;
     }
-
     .borrowing-form h2 {
       margin-bottom: 15px;
       color: #34495e;
     }
-
     form label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
     }
-
     form input, form select, form button {
       width: 100%;
       padding: 8px;
@@ -90,7 +71,6 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
     form button {
       background-color: #2980b9;
       color: white;
@@ -98,28 +78,24 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .table-section h2 {
       margin-bottom: 10px;
       color: #34495e;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-
     th, td {
       padding: 12px;
       border-bottom: 1px solid #ddd;
       text-align: left;
     }
-
     th {
       background-color: #2980b9;
+      color: white;
     }
-
     .actions button {
       background-color: #27ae60;
       color: white;
@@ -127,10 +103,13 @@
       padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
+      margin: 2px;
     }
-
     .actions button.returned {
       background-color: #e67e22;
+    }
+    .actions button.lost {
+      background-color: #c0392b;
     }
   </style>
 </head>
@@ -146,7 +125,8 @@
       <a href="Borrowings.html">Borrowings</a>
       <a href="Fines.html">Fines</a>
       <a href="Transactions.html">Transactions</a>
-     <button class="logout-btn" onclick="confirmLogout()">Logout</button>
+      <button class="logout-btn" onclick="confirmLogout()">Logout</button>
+      
     </nav>
   </header>
 
@@ -157,9 +137,7 @@
       <h2>Record Borrowing</h2>
       <form id="borrowingForm">
         <label for="bookSelect">Select Book Title</label>
-        <select id="bookSelect" onchange="updateBookID()" required>
-          <option value="">-- Loading books... --</option>
-        </select>
+        <select id="bookSelect" onchange="updateBookID()" required></select>
 
         <label for="bookId">Book ID</label>
         <input type="text" id="bookId" name="bookId" readonly />
@@ -180,7 +158,6 @@
         <label for="returnDate">Return Date</label>
         <input type="date" id="returnDate" name="returnDate" required />
 
-        <!-- Hidden fields to store BookTitle and FullName -->
         <input type="hidden" name="bookTitle" id="bookTitle">
         <input type="hidden" name="fullName" id="fullName">
 
@@ -205,9 +182,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="borrowingTableBody">
-          <!-- Populated via get_borrowings.php -->
-        </tbody>
+        <tbody id="borrowingTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -219,31 +194,22 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-
-      // Set hidden fields before submission
       const bookSelect = document.getElementById('bookSelect');
       const userFullName = document.getElementById('userFullName').value;
       document.getElementById('bookTitle').value = bookSelect.options[bookSelect.selectedIndex].text;
       document.getElementById('fullName').value = userFullName;
-
       const formData = new FormData(form);
 
-      fetch('AddBorrowing.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data.trim());
-        form.reset();
-        document.getElementById('bookId').value = '';
-        document.getElementById('userId').value = '';
-        loadBorrowings();
-      })
-      .catch(err => {
-        console.error("Error submitting form:", err);
-        alert("An error occurred.");
-      });
+      fetch('AddBorrowing.php', { method: 'POST', body: formData })
+        .then(response => response.text())
+        .then(data => {
+          alert(data.trim());
+          form.reset();
+          document.getElementById('bookId').value = '';
+          document.getElementById('userId').value = '';
+          loadBorrowings();
+        })
+        .catch(err => alert("An error occurred."));
     });
 
     function markReturned(borrowingId, bookId, quantity) {
@@ -251,7 +217,6 @@
       formData.append("borrowingId", borrowingId);
       formData.append("bookId", bookId);
       formData.append("quantity", quantity);
-
       fetch("ReturnBorrowing.php", {
         method: "POST",
         body: formData
@@ -260,22 +225,32 @@
       .then(data => {
         alert(data.trim());
         loadBorrowings();
+      });
+    }
+
+    function markLost(borrowingId) {
+      if (!confirm("Mark this book as lost/damaged and issue R600 fine?")) return;
+      const formData = new FormData();
+      formData.append("borrowingID", borrowingId);
+      fetch("MarkBookLost.php", {
+        method: "POST",
+        body: formData
       })
-      .catch(error => {
-        alert("Failed to return book.");
-        console.error(error);
+      .then(response => response.text())
+      .then(data => {
+        alert(data.trim());
+        loadBorrowings();
       });
     }
 
     function updateBookID() {
       const bookSelect = document.getElementById("bookSelect");
-      const bookIdField = document.getElementById("bookId");
-      bookIdField.value = bookSelect.value;
+      document.getElementById("bookId").value = bookSelect.value;
     }
 
     function fetchBooks() {
       fetch("get_books.php?format=json")
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
           const bookSelect = document.getElementById("bookSelect");
           bookSelect.innerHTML = `<option value="">-- Select a book --</option>`;
@@ -290,7 +265,7 @@
 
     function fetchUsers() {
       fetch("get_users.php")
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
           const datalist = document.getElementById("userList");
           datalist.innerHTML = '';
@@ -305,41 +280,28 @@
 
     function updateUserIDFromName() {
       const nameInput = document.getElementById("userFullName").value;
-      const userIdField = document.getElementById("userId");
-      const userId = usersMap.get(nameInput) || "";
-      userIdField.value = userId;
+      document.getElementById("userId").value = usersMap.get(nameInput) || "";
     }
 
     function loadBorrowings() {
       fetch("get_borrowings.php")
-        .then(response => response.text())
+        .then(res => res.text())
         .then(html => {
           tableBody.innerHTML = html;
-        })
-        .catch(error => {
-          console.error("Error loading borrowings:", error);
-          tableBody.innerHTML = `<tr><td colspan="10">Failed to load borrowings.</td></tr>`;
         });
     }
 
-    window.onload = function () {
+    function confirmLogout() {
+      if (confirm("Are you sure you want to log out?")) {
+        window.location.href = "home.html";
+      }
+    }
+
+    window.onload = () => {
       fetchBooks();
       fetchUsers();
       loadBorrowings();
     };
   </script>
-  <script>
-  function confirmLogout() {
-    // Show a confirmation popup
-    const userConfirmed = confirm("Are you sure you want to log out?");
-    
-    // If the user clicks "OK" (Yes)
-    if (userConfirmed) {
-      // Redirect to home.html
-      window.location.href = "home.html";
-    }
-    // If they click "Cancel", do nothing (stay on the page)
-  }
-</script>
 </body>
 </html>

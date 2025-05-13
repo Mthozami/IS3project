@@ -8,7 +8,6 @@ try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Use JOINs to get FullName from Users and Title from Books
     $stmt = $conn->prepare("
         SELECT 
             b.BorrowingID,
@@ -19,7 +18,10 @@ try {
             b.Quantity,
             b.BorrowedDate,
             b.ReturnDate,
-            b.Status
+            b.Status,
+            EXISTS (
+                SELECT 1 FROM Fines f WHERE f.BorrowingID = b.BorrowingID
+            ) AS HasFine
         FROM Borrowings b
         JOIN Users u ON b.UserID = u.UserID
         JOIN Books bk ON b.BookID = bk.BookID
@@ -30,19 +32,33 @@ try {
 
     foreach ($borrowings as $row) {
         $status = htmlspecialchars($row['Status']);
+        $borrowingID = htmlspecialchars($row['BorrowingID']);
+        $bookID = htmlspecialchars($row['BookID']);
+        $quantity = htmlspecialchars($row['Quantity']);
+        $hasFine = $row['HasFine'];
+
         echo "<tr>";
-        echo "<td>" . htmlspecialchars($row['BorrowingID']) . "</td>";
+        echo "<td>{$borrowingID}</td>";
         echo "<td>" . htmlspecialchars($row['BookTitle']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['BookID']) . "</td>";
+        echo "<td>{$bookID}</td>";
         echo "<td>" . htmlspecialchars($row['FullName']) . "</td>";
         echo "<td>" . htmlspecialchars($row['UserID']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['Quantity']) . "</td>";
+        echo "<td>{$quantity}</td>";
         echo "<td>" . htmlspecialchars($row['BorrowedDate']) . "</td>";
         echo "<td>" . htmlspecialchars($row['ReturnDate']) . "</td>";
-        echo "<td>" . $status . "</td>";
+        echo "<td>{$status}</td>";
+
         echo "<td class='actions'>";
         if ($status === 'borrowed') {
-            echo "<button onclick='markReturned(\"{$row['BorrowingID']}\", \"{$row['BookID']}\", \"{$row['Quantity']}\")' class='returned'>Mark Returned</button>";
+            if ($hasFine) {
+                echo "<button disabled class='returned'>Fine Issued</button>";
+            } else {
+                echo "<button onclick='markReturned(\"{$borrowingID}\", \"{$bookID}\", \"{$quantity}\")' class='returned'>Mark Returned</button>";
+            }
+            // Always allow "Mark as Lost"
+            echo "<button onclick='markLost(\"{$borrowingID}\")' class='lost'>Mark as Lost</button>";
+        } else {
+            echo "-";
         }
         echo "</td></tr>";
     }
