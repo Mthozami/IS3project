@@ -1,50 +1,45 @@
 <?php
-session_start();
+header("Content-Type: text/html");
 
-// Check if user is logged in
-if (!isset($_SESSION['email'])) {
-    header("Location: login.html");
+// No session needed if not filtering by user
+// session_start();
+
+// Connect to database
+$conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
+if ($conn->connect_error) {
+    echo "<tr><td colspan='5'>Connection failed.</td></tr>";
     exit;
 }
 
-$userEmail = $_SESSION['email'];
+// Query ALL borrowings
+$sql = "
+  SELECT 
+    BookTitle,
+    Quantity,
+    BorrowedDate,
+    ReturnDate,
+    Status
+  FROM Borrowings
+  ORDER BY BorrowedDate DESC
+";
 
-// Database connection
-$conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
+$result = $conn->query($sql);
+
+if (!$result || $result->num_rows === 0) {
+    echo "<tr><td colspan='5'>No borrowings found.</td></tr>";
+    exit;
 }
 
-// SQL Query: Join Borrowings with Books to fetch Book Title
-$sql = "SELECT b.BorrowingID, bk.Title AS BookTitle, b.Quantity, b.BorrowDate, b.ReturnDate, b.Status
-        FROM Borrowings b
-        JOIN Books bk ON b.BookID = bk.BookID
-        WHERE b.UserEmail = ?";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $userEmail);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$rowsHtml = "";
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $rowsHtml .= "<tr>
-            <td>{$row['BorrowingID']}</td>
-            <td>{$row['BookTitle']}</td>
-            <td>{$row['Quantity']}</td>
-            <td>{$row['BorrowDate']}</td>
-            <td>{$row['ReturnDate']}</td>
-            <td>{$row['Status']}</td>
-        </tr>";
-    }
-} else {
-    $rowsHtml = "<tr><td colspan='6'>No borrowings found.</td></tr>";
+// Output table rows
+while ($row = $result->fetch_assoc()) {
+    echo "<tr>";
+    echo "<td>" . htmlspecialchars($row["BookTitle"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["Quantity"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["BorrowedDate"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["ReturnDate"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["Status"]) . "</td>";
+    echo "</tr>";
 }
 
-$stmt->close();
 $conn->close();
-
-// Now, include the HTML layout
-include('MyBorrowings.html');
 ?>

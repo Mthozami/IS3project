@@ -12,7 +12,7 @@
     }
 
     .navbar {
-      background-color: #0a1a3f;
+      background-color: #003366;
       color: white;
       padding: 15px 30px;
       display: flex;
@@ -72,13 +72,7 @@
       background-color: #ecf0f1;
     }
 
-    .footer {
-      background-color: #0a1a3f;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      margin-top: 20px;
-    }
+    
   </style>
 </head>
 <body>
@@ -86,39 +80,123 @@
   <header class="navbar">
     <div class="logo">📚 Siza Library</div>
     <nav class="nav-links">
-      <a href="BorrowerDashboard.html">Dashboard</a>
-      <a href="MyBorrowings.php">My Borrowings</a>
+      <a href="BorrowerDashboard.html" class="active">Dashboard</a>
+      <a href="MyBorrowings.html">My Borrowings</a>
       <a href="#">My Fines</a>
-      <a href="#">Profile</a>
-      <button class="logout-btn" onclick="confirmLogout()">Logout</button>
+      <div class="profile-menu">
+    <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+    <div class="dropdown-content" id="profileDropdown">
+      <a href="UpdateProfile.html">Update Profile</a>
+      <a href="home.html" onclick="confirmLogout()">Logout</a>
+    </div>
+  </div>
+      
     </nav>
   </header>
+   <style>
+  .profile-menu {
+  position: relative;
+  display: inline-block;
+}
 
+.profile-icon {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+  margin-left: 20px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dropdown-content a {
+  color: #003366;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.3s;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+</style>
+<script>
+  
+  function confirmLogout() {
+    const userConfirmed = confirm("Are you sure you want to log out?");
+    if (userConfirmed) {
+      window.location.href = "home.html";
+    }
+  }
+
+  function toggleProfileMenu() {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  }
+
+  // Close dropdown when clicking outside
+  window.onclick = function(event) {
+    if (!event.target.matches('.profile-icon')) {
+      const dropdown = document.getElementById("profileDropdown");
+      if (dropdown && dropdown.style.display === "block") {
+        dropdown.style.display = "none";
+      }
+    }
+  };
+</script>
+  
+
+  <main>
   <h1>My Borrowings</h1>
+  
 
-  <div class="container">
+  <section>
+   
     <table>
       <thead>
         <tr>
-          <th>Borrowing ID</th>
           <th>Book Title</th>
           <th>Quantity</th>
-          <th>Borrow Date</th>
-          <th>Return Date</th>
-          <th>Status</th>
+          <th>Date Borrowed</th>
+          <th>Due Date</th>
+          <th>Return Status</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Dynamic PHP rows inserted here -->
-        <?php echo $rowsHtml; ?>
-      </tbody>
+      <tbody id="borrowingsTableBody"></tbody>
     </table>
-  </div>
+  </section>
+</main>
+<script>
+  window.onload = function () {
+    fetch("MyBorrowings.php")
+      .then(response => response.text())
+      .then(html => {
+        // Load the returned rows into the borrowings table body
+        document.getElementById("borrowingsTableBody").innerHTML = html;
+      })
+      .catch(err => {
+        // Show a fallback row if data fails to load
+        document.getElementById("borrowingsTableBody").innerHTML =
+          "<tr><td colspan='4'>Failed to load borrowings.</td></tr>";
+      });
+  };
+</script>
 
-  <footer class="footer">
-    <p>© 2025 Uni Library System. All rights reserved.</p>
-    <p>Contact: help@unilibrary.com | +123 456 7890</p>
-  </footer>
+
+  
 </body>
 <script>
   function confirmLogout() {

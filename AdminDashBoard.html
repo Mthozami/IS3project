@@ -21,7 +21,7 @@
     }
 
     .navbar {
-      background-color: #34495e;
+      background-color: #003366;
       color: white;
       padding: 20px 30px;
       display: flex;
@@ -158,12 +158,12 @@
 </header>
 
 <main class="dashboard">
-  <h1>Welcome, Admin 👋</h1>
+  <h1>Welcome, Admin </h1>
   <p class="subheading">Here’s what’s happening in your library today</p>
 
   <section class="cards">
     <div class="card">
-      <h3>Total Students</h3>
+      <h3>Total Users</h3>
       <p id="studentsCount">Loading...</p>
     </div>
     <div class="card">
@@ -207,11 +207,11 @@
     fetch("get_dashboard_stats.php")
       .then(res => res.json())
       .then(data => {
-        document.getElementById("studentsCount").innerText = `📌 ${data.totalStudents} registered`;
-        document.getElementById("booksCount").innerText = `📚 ${data.totalBooks} in library`;
-        document.getElementById("borrowedCount").innerText = `📦 ${data.borrowedBooks} currently borrowed`;
-        document.getElementById("overdueCount").innerText = `⏰ ${data.overdueBooks} overdue`;
-        document.getElementById("finesCount").innerText = `💰 R${data.finesCollected}`;
+        document.getElementById("studentsCount").innerText = ` ${data.totalStudents} registered`;
+        document.getElementById("booksCount").innerText = `${data.totalBooks} in library`;
+        document.getElementById("borrowedCount").innerText = ` ${data.borrowedBooks} currently borrowed`;
+        document.getElementById("overdueCount").innerText = ` ${data.overdueBooks} overdue`;
+        document.getElementById("finesCount").innerText = ` R${data.finesCollected}`;
       })
       .catch(err => console.error("Failed to fetch dashboard stats:", err));
   }
