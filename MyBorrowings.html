@@ -20,11 +20,6 @@
       align-items: center;
     }
 
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
     .nav-links a {
       color: white;
       margin-left: 15px;
@@ -32,13 +27,41 @@
       font-weight: bold;
     }
 
-    .logout-btn {
-      background-color: #e74c3c;
+    .profile-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .profile-icon {
+      background: none;
       border: none;
-      padding: 8px 15px;
-      color: white;
-      font-weight: bold;
+      font-size: 20px;
       cursor: pointer;
+      color: #fff;
+      margin-left: 20px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #fff;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #003366;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
     }
 
     h1 {
@@ -72,7 +95,18 @@
       background-color: #ecf0f1;
     }
 
-    
+    .fine-status {
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .fine-ok {
+      color: green;
+    }
+
+    .fine-issued {
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -80,136 +114,86 @@
   <header class="navbar">
     <div class="logo">📚 Siza Library</div>
     <nav class="nav-links">
-      <a href="BorrowerDashboard.html" class="active">Dashboard</a>
+      <a href="BorrowerDashboard.html">Dashboard</a>
       <a href="MyBorrowings.html">My Borrowings</a>
-      <a href="#">My Fines</a>
+      <a href="MyFines.html">My Fines</a>
       <div class="profile-menu">
-    <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
-    <div class="dropdown-content" id="profileDropdown">
-      <a href="profile.html">Update Profile</a>
-      <a href="home.html" onclick="confirmLogout()">Logout</a>
-    </div>
-  </div>
-      
+        <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+        <div class="dropdown-content" id="profileDropdown">
+          <a href="profile.html">Update Profile</a>
+          <a href="home.html" onclick="confirmLogout()">Logout</a>
+        </div>
+      </div>
     </nav>
   </header>
-   <style>
-  .profile-menu {
-  position: relative;
-  display: inline-block;
-}
 
-.profile-icon {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #fff;
-  margin-left: 20px;
-}
+  <main class="container">
+    <h1>My Borrowings</h1>
+    <p id="fineStatus" class="fine-status"></p>
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #fff;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 1;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.dropdown-content a {
-  color: #003366;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  transition: background 0.3s;
-}
-
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
-}
-
-</style>
-<script>
-  
-  function confirmLogout() {
-    const userConfirmed = confirm("Are you sure you want to log out?");
-    if (userConfirmed) {
-      window.location.href = "home.html";
-    }
-  }
-
-  function toggleProfileMenu() {
-    const dropdown = document.getElementById("profileDropdown");
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-  }
-
-  // Close dropdown when clicking outside
-  window.onclick = function(event) {
-    if (!event.target.matches('.profile-icon')) {
-      const dropdown = document.getElementById("profileDropdown");
-      if (dropdown && dropdown.style.display === "block") {
-        dropdown.style.display = "none";
-      }
-    }
-  };
-</script>
-  
-
-  <main>
-  <h1>My Borrowings</h1>
-  
-
-  <section>
-   
     <table>
       <thead>
         <tr>
           <th>Book Title</th>
-          <th>Quantity</th>
-          <th>Date Borrowed</th>
+          <th>Borrowed Date</th>
           <th>Due Date</th>
-          <th>Return Status</th>
         </tr>
       </thead>
       <tbody id="borrowingsTableBody"></tbody>
     </table>
-  </section>
-</main>
-<script>
-  window.onload = function () {
-    fetch("MyBorrowings.php")
-      .then(response => response.text())
-      .then(html => {
-        // Load the returned rows into the borrowings table body
-        document.getElementById("borrowingsTableBody").innerHTML = html;
-      })
-      .catch(err => {
-        // Show a fallback row if data fails to load
-        document.getElementById("borrowingsTableBody").innerHTML =
-          "<tr><td colspan='4'>Failed to load borrowings.</td></tr>";
-      });
-  };
-</script>
+  </main>
 
-
-  
-</body>
-<script>
-  function confirmLogout() {
-    // Show a confirmation popup
-    const userConfirmed = confirm("Are you sure you want to log out?");
-    
-    // If the user clicks "OK" (Yes)
-    if (userConfirmed) {
-      // Redirect to home.html
-      window.location.href = "home.html";
+  <script>
+    function confirmLogout() {
+      if (confirm("Are you sure you want to log out?")) {
+        window.location.href = "home.html";
+      }
     }
-    // If they click "Cancel", do nothing (stay on the page)
-  }
-     
-</script>
+
+    function toggleProfileMenu() {
+      const dropdown = document.getElementById("profileDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.profile-icon')) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        }
+      }
+    };
+
+    window.onload = function () {
+      fetch("MyBorrowings.php")
+        .then(response => response.json())
+        .then(data => {
+          const table = document.getElementById("borrowingsTableBody");
+          const fineStatus = document.getElementById("fineStatus");
+
+          if (data.success) {
+            table.innerHTML = data.rows.map(row =>
+              `<tr>
+                <td>${row.Title}</td>
+                <td>${row.BorrowedDate}</td>
+                <td>${row.ReturnDate}</td>
+              </tr>`
+            ).join('');
+
+            if (data.hasFine) {
+              fineStatus.innerText = "A fine has been issued.";
+              fineStatus.classList.add("fine-issued");
+            } else {
+              fineStatus.innerText = "No fine issued.";
+              fineStatus.classList.add("fine-ok");
+            }
+          } else {
+            table.innerHTML = "<tr><td colspan='3'>No borrowings found.</td></tr>";
+            fineStatus.innerText = "Could not determine fine status.";
+          }
+        });
+    };
+  </script>
+
+</body>
 </html>
