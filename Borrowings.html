@@ -117,7 +117,7 @@
     }
 
     th {
-      background-color: #ecf0f1;
+      background-color: #2980b9;
     }
 
     .actions button {
@@ -139,14 +139,16 @@
 
   <header class="navbar">
     <div class="logo">📚 Admin Dashboard</div>
-    <nav class="nav-links">
-      <a href="AdminDashBoard.html">Dashboard</a>
-      <a href="RegisterStudent.html">Manage Users</a>
-      <a href="AddBook.html">Books</a>
-      <a href="Borrowings.html">Borrowings</a>
-      <a href="Fines.html">Fines</a>
-      <a href="Transactions.html">Transactions</a>
-     <button class="logout-btn" onclick="confirmLogout()">Logout</button>
+       <nav class="nav-links">
+          <a href="BorrowerDashboard.html" class="active">Dashboard</a>
+          <a href="MyBorrowings.html">My Borrowings</a>
+        <a href="#">My Fines</a>
+      <div class="profile-menu">
+       <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+         <div class="dropdown-content" id="profileDropdown">
+          <a href="UpdateProfile.html">Update Profile</a>
+          <a href="home.html" onclick="confirmLogout()">Logout</a>
+    </div>
     </nav>
   </header>
 
