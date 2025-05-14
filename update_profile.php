@@ -21,17 +21,33 @@ $userId = $_SESSION["UserID"];
 $fullName = $_POST["FullName"] ?? '';
 $email = $_POST["Email"] ?? '';
 $phone = $_POST["PhoneNumber"] ?? '';
-$password = $_POST["Password"] ?? '';
+$currentPassword = $_POST["CurrentPassword"] ?? '';
+$newPassword = $_POST["NewPassword"] ?? '';
 
-// Basic validation
 if (!$fullName || !$email || !$phone) {
     http_response_code(400);
     exit("Please fill in all required fields.");
 }
 
-// Check if password was provided
-if (!empty($password)) {
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+if (!empty($newPassword)) {
+    if (empty($currentPassword)) {
+        http_response_code(400);
+        exit("Current password is required to change your password.");
+    }
+
+    $check = $conn->prepare("SELECT Password FROM Users WHERE UserID = ?");
+    $check->bind_param("i", $userId);
+    $check->execute();
+    $result = $check->get_result();
+    $user = $result->fetch_assoc();
+    $check->close();
+
+    if (!$user || !password_verify($currentPassword, $user["Password"])) {
+        http_response_code(401);
+        exit("Current password is incorrect.");
+    }
+
+    $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
     $stmt = $conn->prepare("UPDATE Users SET FullName = ?, Email = ?, PhoneNumber = ?, Password = ? WHERE UserID = ?");
     $stmt->bind_param("ssssi", $fullName, $email, $phone, $hashedPassword, $userId);
 } else {
