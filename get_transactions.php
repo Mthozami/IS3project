@@ -1,12 +1,17 @@
 <?php
+// Set content type to HTML for table rows output
 header("Content-Type: text/html");
 
+// Establish connection to MySQL database
 $conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
+
+// If connection fails, output an error row in HTML
 if ($conn->connect_error) {
   echo "<tr><td colspan='7'>Connection failed.</td></tr>";
   exit;
 }
 
+// SQL query to fetch transactions joined with fines, borrowings, users, and books
 $sql = "
   SELECT 
     t.TransactionID,
@@ -24,14 +29,19 @@ $sql = "
   ORDER BY t.PaymentDate ASC
 ";
 
+// Execute the query
 $result = $conn->query($sql);
+
+// If no results, display a message row
 if (!$result || $result->num_rows === 0) {
   echo "<tr><td colspan='7'>No transactions found.</td></tr>";
   exit;
 }
 
+// Loop through each result row
 while ($row = $result->fetch_assoc()) {
   echo "<tr>";
+  // Escape and display each field to prevent XSS
   echo "<td>" . htmlspecialchars($row["TransactionID"]) . "</td>";
   echo "<td>" . htmlspecialchars($row["FineID"]) . "</td>";
   echo "<td>" . htmlspecialchars($row["FullName"]) . "</td>";
@@ -42,5 +52,6 @@ while ($row = $result->fetch_assoc()) {
   echo "</tr>";
 }
 
+// Close DB connection
 $conn->close();
 ?>

@@ -1,44 +1,44 @@
 <?php
-// Replace with your actual DB credentials
+// Set database connection variables
 $host = "localhost";
 $username = "root";
 $password = "Mthozami@2004";
 $dbname = "LibraryDB";
 
-// Create connection
+// Create a new MySQLi connection
 $conn = new mysqli($host, $username, $password, $dbname);
 
-// Check connection
+// Check for connection error
 if ($conn->connect_error) {
-  // Return detailed error message in JSON format
+  // If connection fails, return a JSON error response and stop execution
   echo json_encode(['error' => 'Connection failed', 'message' => $conn->connect_error]);
   exit();
 }
 
-// SQL query to get users
+// SQL query to fetch all users from the "users" table
 $sql = "SELECT UserID, FullName, Email, Password, PhoneNumber, Role, CreatedAt FROM users ORDER BY userId ASC";
 
-// Run the query and check if it was successful
+// Execute the query
 $result = $conn->query($sql);
 
-// Initialize an array to hold the users
+// Initialize an empty array to hold the user records
 $users = [];
 
-// If the query was successful and we have results
+// If the result is valid and contains rows
 if ($result && $result->num_rows > 0) {
-  // Fetch all users and add them to the $users array
+  // Fetch each row and add it to the $users array
   while ($row = $result->fetch_assoc()) {
     $users[] = $row;
   }
 } else {
-  // If no users are found, you can return an empty array or an error message
+  // If no users found, return a message in the array
   $users = ['message' => 'No users found'];
 }
 
-// Set the header to indicate that the response is JSON
+// Set the response type to JSON
 header('Content-Type: application/json');
 
-// Return the results as JSON
+// Output the result as a JSON object
 echo json_encode($users);
 
 // Close the database connection
