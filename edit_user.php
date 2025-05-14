@@ -47,9 +47,14 @@ $conn->close();
       <input type="text" id="fullName" name="fullName" value="<?= htmlspecialchars($user['FullName']) ?>" class="form-control" required>
     </div>
     <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['Email']) ?>" class="form-control" required>
-    </div>
+       <label for="email" class="form-label">Email</label>
+       <input type="email" id="email" name="email"
+         value="<?= htmlspecialchars($user['Email']) ?>"
+         class="form-control" required
+         pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+         title="Please enter a valid Gmail address like user@gmail.com">
+</div>
+
     <div class="mb-3">
       <label for="phone" class="form-label">Phone Number</label>
       <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($user['PhoneNumber']) ?>" class="form-control" required>

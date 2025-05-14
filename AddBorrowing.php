@@ -23,6 +23,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Missing required fields.");
     }
 
+    // ✅ Enforce only 1 book borrowing
+    if ((int)$quantity !== 1) {
+        die("You are only allowed to borrow 1 book at a time.");
+    }
+
+    // ✅ Validate date format and logic
+    $today = new DateTime(); // Today
+    $borrowDateObj = DateTime::createFromFormat('Y-m-d', $borrowDate);
+    $returnDateObj = DateTime::createFromFormat('Y-m-d', $returnDate);
+
+    if (!$borrowDateObj || !$returnDateObj) {
+        die("Invalid date format. Use YYYY-MM-DD.");
+    }
+
+    // Remove time for fair comparison
+    $today->setTime(0, 0, 0);
+    $borrowDateObj->setTime(0, 0, 0);
+    $returnDateObj->setTime(0, 0, 0);
+
+    if ($borrowDateObj < $today) {
+        die("Borrow date cannot be in the past.");
+    }
+
+    if ($returnDateObj < $borrowDateObj) {
+        die("Return date cannot be before the borrow date.");
+    }
+
     // 1. Check available book quantity
     $checkQuery = "SELECT Quantity FROM Books WHERE BookID = ?";
     $stmt = $conn->prepare($checkQuery);
@@ -34,8 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $row = $result->fetch_assoc();
-    if ((int)$row["Quantity"] < (int)$quantity) {
-        die("Not enough copies available.");
+    if ((int)$row["Quantity"] < 1) {
+        die("No copies available.");
     }
 
     // 2. Insert into Borrowings table
@@ -48,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($stmt->execute()) {
         // 3. Update quantity in Books
-        $updateQuery = "UPDATE Books SET Quantity = Quantity - ? WHERE BookID = ?";
+        $updateQuery = "UPDATE Books SET Quantity = Quantity - 1 WHERE BookID = ?";
         $updateStmt = $conn->prepare($updateQuery);
-        $updateStmt->bind_param("ii", $quantity, $bookId);
+        $updateStmt->bind_param("i", $bookId);
         $updateStmt->execute();
         echo "Borrowing recorded successfully.";
     } else {
