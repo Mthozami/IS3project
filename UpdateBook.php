@@ -1,54 +1,55 @@
 <?php
-// Establish a connection to the MySQL database
+//  This part connects to our Library database
 $conn = new mysqli("localhost", "root", "Mthozami@2004", "LibraryDB");
 
-// Check  connection errors
+//  If something goes wrong while connecting, stop and show an error message
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if the request method is POST (e.g,form was submitted using post method)
+//  Check if the user submitted the form using POST (means they clicked "Update Book")
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  // Get the submitted form values
+  //  Get all the form values they typed (the Book ID, title, quantity and ISBN)
   $bookID = $_POST["bookID"];
   $title = $_POST["title"];
   $quantity = $_POST["quantity"];
   $isbn = $_POST["isbn"];
 
-  // Use a prepared statement to safely update book info (SQL Injection prevention)
+  //  Use a prepared SQL statement (helps prevent bad people from hacking it)
   $stmt = $conn->prepare("UPDATE books SET Title = ?, Quantity = ?, ISBN = ? WHERE BookID = ?");
-  // Bind values to placeholders (s: string, i: int)
+
+  // Replace the ?s above with the real values (s = string, i = integer)
   $stmt->bind_param("sisi", $title, $quantity, $isbn, $bookID);
 
-  // Execute the statement and give feedback to the user
+  // Try to update the book in the database
   if ($stmt->execute()) {
-  // Show success alert and redirect to AddBook.html
+    //  If it worked, show a message and send user back to AddBook.html
     echo "<script>alert('Book updated successfully.'); window.location.href='AddBook.html';</script>";
     exit;
   } else {
-    // Show error if execution fails
+    //  If something failed, show an error message
     echo "<script>alert('Error updating book: " . $conn->error . "');</script>";
   }
 
-  // Close the statement
+  //  Close the statement after using it
   $stmt->close();
+
 } else {
+  //  If the user came to this page with GET (like clicking “edit” from a list), load the values from the URL
 
-   /* This  is used to  handles GET requests: pre-fill form with book data from URL
-
-    Retrieve values from the URL using GET (used to populate form fields)*/
   $bookID = $_GET["BookID"];
   $title = $_GET["Title"];
   $quantity = $_GET["Quantity"];
   $isbn = $_GET["ISBN"];
 ?>
+<!--  Start of the web page (HTML) -->
 <!DOCTYPE html>
 <html>
 <head>
   <title>Edit Book</title>
   <style>
-    /* Style the body and center the form */
+    /* Make the form look nice and centered */
     body {
       font-family: Arial, sans-serif;
       background-color: #f2f2f2;
@@ -59,7 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       align-items: center;
       height: 100vh;
     }
-     /* Form container styling */
 
     form {
       background-color: #fff;
@@ -107,32 +107,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </style>
 </head>
 <body>
-  <!-- Form to update book details -->
+  <!-- Form where the librarian can update the book details -->
   <form method="POST" action="UpdateBook.php">
     <h2>Edit Book</h2>
-    <!-- Hidden input to keep track of which book is being edited -->
+
+    <!--  Hidden input to remember which book we are updating -->
     <input type="hidden" name="bookID" value="<?php echo htmlspecialchars($bookID); ?>">
 
-     <!-- Title input field (pre-filled from URL) -->
+    <!-- Input for book title -->
     <label>Title:</label>
     <input type="text" name="title" value="<?php echo htmlspecialchars($title); ?>" required>
 
-        <!-- Quantity input field (pre-filled from URL) -->
+    <!-- Input for book quantity -->
     <label>Quantity:</label>
     <input type="number" name="quantity" value="<?php echo $quantity; ?>" required>
 
-    <!-- ISBN input field (pre-filled from URL) -->
+    <!-- Input for book ISBN -->
     <label>ISBN:</label>
     <input type="text" name="isbn" value="<?php echo htmlspecialchars($isbn); ?>" required>
 
-     <!-- Submit button -->
+    <!-- Button to submit the form -->
     <input type="submit" value="Update Book">
   </form>
 </body>
 </html>
 <?php
 }
-/* End of else (GET request)
-Close the database connection*/
+//  Close the connection to the database at the very end
 $conn->close();
 ?>

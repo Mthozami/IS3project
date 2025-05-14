@@ -13,13 +13,16 @@ $conn = new mysqli($host, $user, $pass, $db);
 
 // If the connection fails, stop and show an error
 if ($conn->connect_error) {
-    http_response_code(500); // This means "server error"
-    exit("Database connection failed."); // Show this message
+    // This means "server error"
+    http_response_code(500); 
+    // Show this message
+    exit("Database connection failed."); 
 }
 
 // If the user is not logged in, stop and show an error
 if (!isset($_SESSION["UserID"])) {
-    http_response_code(403); // This means "not allowed"
+    // This means "not allowed"
+    http_response_code(403); 
     exit("You are not logged in.");
 }
 
@@ -36,7 +39,8 @@ $confirmPassword = $_POST["ConfirmPassword"] ?? '';
 
 // If name, email, or phone is missing, stop and show error
 if (!$fullName || !$email || !$phone) {
-    http_response_code(400); // This means "bad request"
+    // This means "bad request"
+    http_response_code(400); 
     exit("Please fill in all required fields.");
 }
 
@@ -57,7 +61,8 @@ if (!empty($newPassword)) {
 
     // Look up the user's old password in the database
     $check = $conn->prepare("SELECT Password FROM Users WHERE UserID = ?");
-    $check->bind_param("i", $userId); // "i" means integer
+    // "i" means integer
+    $check->bind_param("i", $userId); 
     $check->execute();
     $result = $check->get_result();
     $user = $result->fetch_assoc();
@@ -65,7 +70,8 @@ if (!empty($newPassword)) {
 
     // If we didn't find a user or the password is wrong, stop
     if (!$user || !password_verify($currentPassword, $user["Password"])) {
-        http_response_code(401); // This means "unauthorized"
+        // This means "unauthorized"
+        http_response_code(401); 
         exit("Current password is incorrect.");
     }
 
@@ -74,7 +80,8 @@ if (!empty($newPassword)) {
 
     // Update everything including the new password
     $stmt = $conn->prepare("UPDATE Users SET FullName = ?, Email = ?, PhoneNumber = ?, Password = ? WHERE UserID = ?");
-    $stmt->bind_param("ssssi", $fullName, $email, $phone, $hashedPassword, $userId); // "s" means string
+    // "s" means string
+    $stmt->bind_param("ssssi", $fullName, $email, $phone, $hashedPassword, $userId); 
 } else {
     // If no new password, update only name, email, and phone
     $stmt = $conn->prepare("UPDATE Users SET FullName = ?, Email = ?, PhoneNumber = ? WHERE UserID = ?");
@@ -83,10 +90,12 @@ if (!empty($newPassword)) {
 
 // Try to update the user's info
 if ($stmt->execute()) {
-    echo "Profile updated successfully!"; // Tell the user it worked
+    // Tell the user that an update has been succesful
+    echo "Profile updated successfully!"; 
 } else {
     http_response_code(500);
-    echo "Failed to update profile: " . $conn->error; // Show the error if it failed
+    // Show the error if it failed
+    echo "Failed to update profile: " . $conn->error; 
 }
 
 // Close the statement and connection to clean up
