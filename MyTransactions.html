@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>My Transactions</title>
   <style>
     body {
@@ -41,10 +41,23 @@
       color: #003366;
     }
 
+    .search-bar {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+
+    .search-bar input {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 250px;
+      font-size: 14px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     th, td {
@@ -60,6 +73,7 @@
     .profile-menu {
       position: relative;
       display: inline-block;
+      text-align: center;
     }
 
     .profile-icon {
@@ -69,6 +83,12 @@
       cursor: pointer;
       color: #fff;
       margin-left: 20px;
+    }
+
+    #userNameDisplay {
+      font-size: 13px;
+      color: white;
+      margin-top: 5px;
     }
 
     .dropdown-content {
@@ -103,9 +123,10 @@
     <a href="BorrowerDashboard.html">Dashboard</a>
     <a href="MyBorrowings.html">My Borrowings</a>
     <a href="MyFines.html">My Fines</a>
-    <a href="MyTransactions.html" >My Payments</a>
+    <a href="MyTransactions.html">My Payments</a>
     <div class="profile-menu">
       <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+      <div id="userNameDisplay"></div>
       <div class="dropdown-content" id="profileDropdown">
         <a href="profile.html">Update Profile</a>
         <a href="home.html" onclick="confirmLogout()">Logout</a>
@@ -115,7 +136,12 @@
 </header>
 
 <div class="container">
-  <h1>My Payment History </h1>
+  <h1>My Payment History</h1>
+
+  <div class="search-bar">
+    <input type="text" id="transactionSearchInput" placeholder="Search by Receipt # or Date..." onkeyup="filterTransactions()">
+  </div>
+
   <table>
     <thead>
       <tr>
@@ -131,6 +157,8 @@
 </div>
 
 <script>
+  let allTransactions = [];
+
   function confirmLogout() {
     if (confirm("Are you sure you want to log out?")) {
       window.location.href = "home.html";
@@ -151,21 +179,46 @@
     }
   };
 
+  function renderTransactions(data) {
+    const tbody = document.getElementById("transactionsTableBody");
+    tbody.innerHTML = data.map(tx => `
+      <tr>
+        <td>${tx.ReceiptNumber}</td>
+        <td>${tx.PaymentDate}</td>
+        <td>R${parseFloat(tx.PaidAmount).toFixed(2)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function filterTransactions() {
+    const value = document.getElementById("transactionSearchInput").value.toLowerCase();
+    const filtered = allTransactions.filter(tx =>
+      tx.ReceiptNumber.toLowerCase().includes(value) ||
+      tx.PaymentDate.toLowerCase().includes(value)
+    );
+    renderTransactions(filtered);
+  }
+
   window.onload = function () {
+    // Load transactions
     fetch("MyTransactions.php")
       .then(response => response.json())
       .then(data => {
-        const tbody = document.getElementById("transactionsTableBody");
         if (data.success && data.rows.length > 0) {
-          tbody.innerHTML = data.rows.map(tx => `
-            <tr>
-              <td>${tx.ReceiptNumber}</td>
-              <td>${tx.PaymentDate}</td>
-              <td>R${parseFloat(tx.PaidAmount).toFixed(2)}</td>
-            </tr>
-          `).join('');
+          allTransactions = data.rows;
+          renderTransactions(allTransactions);
         } else {
-          tbody.innerHTML = "<tr><td colspan='3'>No transactions found.</td></tr>";
+          document.getElementById("transactionsTableBody").innerHTML =
+            "<tr><td colspan='3'>No transactions found.</td></tr>";
+        }
+      });
+
+    // Load user full name
+    fetch("get_profile.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("userNameDisplay").innerText = data.FullName;
         }
       });
   };

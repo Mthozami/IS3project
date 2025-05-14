@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>My Borrowings</title>
   <style>
     body {
@@ -30,6 +30,7 @@
     .profile-menu {
       position: relative;
       display: inline-block;
+      text-align: center;
     }
 
     .profile-icon {
@@ -39,6 +40,12 @@
       cursor: pointer;
       color: #fff;
       margin-left: 20px;
+    }
+
+    #userNameDisplay {
+      font-size: 13px;
+      color: white;
+      margin-top: 5px;
     }
 
     .dropdown-content {
@@ -137,6 +144,7 @@
       <a href="MyTransactions.html">My Payments</a>
       <div class="profile-menu">
         <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+        <div id="userNameDisplay"></div>
         <div class="dropdown-content" id="profileDropdown">
           <a href="profile.html">Update Profile</a>
           <a href="home.html" onclick="confirmLogout()">Logout</a>
@@ -189,6 +197,7 @@
     let allBorrowings = [];
 
     window.onload = function () {
+      // Load borrowings
       fetch("MyBorrowings.php")
         .then(response => response.json())
         .then(data => {
@@ -196,7 +205,7 @@
           const fineStatus = document.getElementById("fineStatus");
 
           if (data.success) {
-            allBorrowings = data.rows; // Store for search filtering
+            allBorrowings = data.rows;
             renderTable(allBorrowings);
 
             if (data.hasFine) {
@@ -209,6 +218,15 @@
           } else {
             table.innerHTML = "<tr><td colspan='3'>No borrowings found.</td></tr>";
             fineStatus.innerText = "Could not determine fine status.";
+          }
+        });
+
+      // Load user name
+      fetch("get_profile.php")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("userNameDisplay").innerText = data.FullName;
           }
         });
     };
