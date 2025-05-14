@@ -79,6 +79,19 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
+    .search-bar {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .search-bar input {
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+      font-size: 14px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -136,6 +149,10 @@
     <h1>My Borrowings History</h1>
     <p id="fineStatus" class="fine-status"></p>
 
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by Book Title..." onkeyup="filterTable()">
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -169,6 +186,8 @@
       }
     };
 
+    let allBorrowings = [];
+
     window.onload = function () {
       fetch("MyBorrowings.php")
         .then(response => response.json())
@@ -177,20 +196,11 @@
           const fineStatus = document.getElementById("fineStatus");
 
           if (data.success) {
-            let html = '';
-            data.rows.forEach(row => {
-              const rowClass = row.HasUnpaidFine ? 'highlight-fine' : '';
-              html += `<tr class="${rowClass}">
-                         <td>${row.Title}</td>
-                         <td>${row.BorrowedDate}</td>
-                         <td>${row.ReturnDate}</td>
-                       </tr>`;
-            });
-
-            table.innerHTML = html;
+            allBorrowings = data.rows; // Store for search filtering
+            renderTable(allBorrowings);
 
             if (data.hasFine) {
-              fineStatus.innerText = "A fine has been issued to you for unreturned book the higlighted one in your borrowings history.";
+              fineStatus.innerText = "A fine has been issued to you for unreturned book(s). Highlighted rows indicate the related borrowings.";
               fineStatus.className = "fine-status fine-issued";
             } else {
               fineStatus.innerText = "You have no fines currently.";
@@ -202,6 +212,28 @@
           }
         });
     };
+
+    function renderTable(data) {
+      const table = document.getElementById("borrowingsTableBody");
+      let html = '';
+
+      data.forEach(row => {
+        const rowClass = row.HasUnpaidFine ? 'highlight-fine' : '';
+        html += `<tr class="${rowClass}">
+                   <td>${row.Title}</td>
+                   <td>${row.BorrowedDate}</td>
+                   <td>${row.ReturnDate}</td>
+                 </tr>`;
+      });
+
+      table.innerHTML = html;
+    }
+
+    function filterTable() {
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allBorrowings.filter(row => row.Title.toLowerCase().includes(searchValue));
+      renderTable(filtered);
+    }
   </script>
 
 </body>
