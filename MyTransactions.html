@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Transactions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fb;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #003366;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: white;
+      margin-left: 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #ecf0f1;
+    }
+
+    .profile-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .profile-icon {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #fff;
+      margin-left: 20px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #fff;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #003366;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo">📚 Siza Library</div>
+  <nav class="nav-links">
+    <a href="BorrowerDashboard.html">Dashboard</a>
+    <a href="MyBorrowings.html">My Borrowings</a>
+    <a href="MyFines.html">My Fines</a>
+    <a href="MyTransactions.html" >My Transactions</a>
+    <div class="profile-menu">
+      <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+      <div class="dropdown-content" id="profileDropdown">
+        <a href="profile.html">Update Profile</a>
+        <a href="home.html" onclick="confirmLogout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <h1>My Transactions</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Receipt Number</th>
+        <th>Payment Date</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody id="transactionsTableBody">
+      <!-- Populated by JS -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function confirmLogout() {
+    if (confirm("Are you sure you want to log out?")) {
+      window.location.href = "home.html";
+    }
+  }
+
+  function toggleProfileMenu() {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  }
+
+  window.onclick = function (event) {
+    if (!event.target.matches('.profile-icon')) {
+      const dropdown = document.getElementById("profileDropdown");
+      if (dropdown && dropdown.style.display === "block") {
+        dropdown.style.display = "none";
+      }
+    }
+  };
+
+  window.onload = function () {
+    fetch("MyTransactions.php")
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById("transactionsTableBody");
+        if (data.success && data.rows.length > 0) {
+          tbody.innerHTML = data.rows.map(tx => `
+            <tr>
+              <td>${tx.ReceiptNumber}</td>
+              <td>${tx.PaymentDate}</td>
+              <td>R${parseFloat(tx.PaidAmount).toFixed(2)}</td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = "<tr><td colspan='3'>No transactions found.</td></tr>";
+        }
+      });
+  };
+</script>
+
+</body>
+</html>
