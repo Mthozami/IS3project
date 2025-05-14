@@ -21,8 +21,15 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Fetch borrowings
-$sql = "SELECT b.Title, br.BorrowedDate, br.ReturnDate
+// Fetch borrowings and unpaid fine status per borrowing
+$sql = "SELECT 
+            b.Title, 
+            br.BorrowedDate, 
+            br.ReturnDate,
+            EXISTS (
+                SELECT 1 FROM Fines f 
+                WHERE f.BorrowingID = br.BorrowingID AND f.IsPaid = 0
+            ) AS HasUnpaidFine
         FROM Borrowings br
         INNER JOIN Books b ON br.BookID = b.BookID
         WHERE br.UserID = ?";
@@ -32,33 +39,26 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $borrowings = [];
+$hasAnyUnpaidFine = false;
+
 while ($row = $result->fetch_assoc()) {
+    if ($row["HasUnpaidFine"]) {
+        $hasAnyUnpaidFine = true;
+    }
+
     $borrowings[] = [
         "Title" => $row["Title"],
         "BorrowedDate" => $row["BorrowedDate"],
-        "ReturnDate" => $row["ReturnDate"]
+        "ReturnDate" => $row["ReturnDate"],
+        "HasUnpaidFine" => (bool)$row["HasUnpaidFine"]
     ];
 }
+
 $stmt->close();
-
-// Check for fines
-$hasFine = false;
-$fineQuery = $conn->prepare("SELECT COUNT(*) as fineCount FROM Fines f
-                             INNER JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
-                             WHERE b.UserID = ?");
-$fineQuery->bind_param("i", $userID);
-$fineQuery->execute();
-$fineResult = $fineQuery->get_result();
-if ($fineRow = $fineResult->fetch_assoc()) {
-    $hasFine = $fineRow["fineCount"] > 0;
-}
-$fineQuery->close();
-
 $conn->close();
 
 echo json_encode([
     "success" => true,
     "rows" => $borrowings,
-    "hasFine" => $hasFine
+    "hasFine" => $hasAnyUnpaidFine
 ]);
-?>

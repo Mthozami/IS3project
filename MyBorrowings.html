@@ -107,6 +107,10 @@
     .fine-issued {
       color: red;
     }
+
+    .highlight-fine {
+      background-color: #ffe6e6;
+    }
   </style>
 </head>
 <body>
@@ -173,20 +177,24 @@
           const fineStatus = document.getElementById("fineStatus");
 
           if (data.success) {
-            table.innerHTML = data.rows.map(row =>
-              `<tr>
-                <td>${row.Title}</td>
-                <td>${row.BorrowedDate}</td>
-                <td>${row.ReturnDate}</td>
-              </tr>`
-            ).join('');
+            let html = '';
+            data.rows.forEach(row => {
+              const rowClass = row.HasUnpaidFine ? 'highlight-fine' : '';
+              html += `<tr class="${rowClass}">
+                         <td>${row.Title}</td>
+                         <td>${row.BorrowedDate}</td>
+                         <td>${row.ReturnDate}</td>
+                       </tr>`;
+            });
+
+            table.innerHTML = html;
 
             if (data.hasFine) {
               fineStatus.innerText = "A fine has been issued.";
-              fineStatus.classList.add("fine-issued");
+              fineStatus.className = "fine-status fine-issued";
             } else {
-              fineStatus.innerText = "No fine issued.";
-              fineStatus.classList.add("fine-ok");
+              fineStatus.innerText = "You have no fines currently.";
+              fineStatus.className = "fine-status fine-ok";
             }
           } else {
             table.innerHTML = "<tr><td colspan='3'>No borrowings found.</td></tr>";
