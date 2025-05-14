@@ -1,49 +1,68 @@
 <?php
+// Set database connection variables
 $host = "localhost";
 $username = "root";
 $password = "Mthozami@2004";
 $dbname = "LibraryDB";
 
+// Create a new MySQLi connection
 $conn = new mysqli($host, $username, $password, $dbname);
+
+// Check if the connection failed
 if ($conn->connect_error) {
-    http_response_code(500);
+    // Return HTTP 500 error
+    http_response_code(500); 
     echo "Database connection failed.";
-    exit;
+    // Stop script execution
+    exit; 
 }
 
+// Check if the request method is POST and fineID is set
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["fineID"])) {
+    // Convert fineID to integer to sanitize input
     $fineID = intval($_POST["fineID"]);
 
-    // Step 1: Ensure the fine exists and is unpaid, fetch the latest amount
+    // Step 1: Get current fine details using prepared statement (Prevents SQL Injection )
     $stmt = $conn->prepare("SELECT Amount, IsPaid FROM Fines WHERE FineID = ?");
-    $stmt->bind_param("i", $fineID);
+    // Bind integer parameter
+    $stmt->bind_param("i", $fineID); 
+     // Execute the statement
     $stmt->execute();
-    $stmt->bind_result($amount, $isPaid);
+    // Bind result variables
+    $stmt->bind_result($amount, $isPaid); 
+
+    // If no fine found
     if (!$stmt->fetch()) {
-        http_response_code(404);
+        // Return 404
+        http_response_code(404); 
         echo "Fine not found.";
-        $stmt->close();
+        // Close statement
+        $stmt->close(); 
         exit;
     }
-    $stmt->close();
+    // Close statement
+    $stmt->close(); 
 
+    // If the fine is already paid
     if ($isPaid) {
         echo "This fine has already been paid.";
         exit;
     }
 
-    // Step 2: Mark fine as paid
+    // Step 2: Update fine to mark it as paid (Safe via prepared statement ✅)
     $stmt = $conn->prepare("UPDATE Fines SET IsPaid = 1 WHERE FineID = ?");
-    $stmt->bind_param("i", $fineID);
+    // Bind parameter
+    $stmt->bind_param("i", $fineID); 
     if (!$stmt->execute()) {
-        http_response_code(500);
+        // Internal error
+        http_response_code(500); 
         echo "Failed to mark fine as paid.";
         $stmt->close();
         exit;
     }
     $stmt->close();
 
-    // Step 3: Immediately re-fetch the latest amount to ensure it's the adjusted value
+    // Step 3: Re-fetch updated amount (in case of adjustments)
     $stmt = $conn->prepare("SELECT Amount FROM Fines WHERE FineID = ?");
     $stmt->bind_param("i", $fineID);
     $stmt->execute();
@@ -56,24 +75,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["fineID"])) {
     }
     $stmt->close();
 
-    // Step 4: Record transaction
-    $receipt = uniqid("RCPT-");
-    $paymentDate = date("Y-m-d H:i:s");
+    /* Step 4: Insert payment record in Transactions table (Safe via prepared statement )
+     Generate a unique receipt number
+    Get current datetime*/
+    $receipt = uniqid("RCPT-"); 
+    $paymentDate = date("Y-m-d H:i:s"); 
 
     $stmt = $conn->prepare("INSERT INTO Transactions (FineID, ReceiptNumber, PaymentDate, PaidAmount) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("issd", $fineID, $receipt, $paymentDate, $amount);
+    // Bind parameters
+    $stmt->bind_param("issd", $fineID, $receipt, $paymentDate, $amount); 
     if ($stmt->execute()) {
         echo "Fine marked as paid and transaction recorded: R" . number_format($amount, 2);
     } else {
-        http_response_code(500);
+        // Error on insert
+        http_response_code(500); 
         echo "Failed to record transaction.";
     }
-
-    $stmt->close();
+ // Close the statement
+    $stmt->close(); 
 } else {
-    http_response_code(400);
+    // Bad request
+    http_response_code(400); 
     echo "Invalid request.";
 }
 
+// Close DB connection
 $conn->close();
 ?>

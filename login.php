@@ -1,50 +1,63 @@
 <?php
+// Start the session
 session_start();
 
-// Database credentials
+// DB connection variables
 $host = "localhost";
 $username = "root";
 $password = "Mthozami@2004";
 $dbname = "LibraryDB";
 
-// DB connection
+// Connect to the database
 $conn = new mysqli($host, $username, $password, $dbname);
+
+// Handle DB connection error
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Ensure POST request
+// Only accept POST request
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     die("Invalid request method.");
 }
 
-// Validate POST inputs
-$email = trim($_POST['email'] ?? '');
+// Read email and password from POST request and // trim whitespace
+$email = trim($_POST['email'] ?? ''); 
 $password = $_POST['password'] ?? '';
 
+// Validate inputs
 if (empty($email) || empty($password)) {
     die("Email or password cannot be empty.");
 }
 
-// Fetch user by email
+// Step 1: Use prepared statement to fetch user by email safe
 $sql = "SELECT * FROM Users WHERE Email = ?";
 $stmt = $conn->prepare($sql);
+
+// Handle prepare failure
 if (!$stmt) {
     die("Prepare failed: " . $conn->error);
 }
 
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+// Bind email string
+$stmt->bind_param("s", $email); 
+// Run query
+$stmt->execute(); 
+// Get result set
+$result = $stmt->get_result(); 
 
+// Step 2: If user found
 if ($result->num_rows === 1) {
-    $user = $result->fetch_assoc();
-    $storedPassword = $user['Password'];
-    $userRole = $user['Role'];
+    // Get user record
+    $user = $result->fetch_assoc(); 
+    // Stored password hash or raw password
+    $storedPassword = $user['Password']; 
+    // Get user role
+    $userRole = $user['Role']; 
 
-    // Secure password check
+    // Check password (supports both hashed and plain text)
     if (password_verify($password, $storedPassword) || $password === $storedPassword) {
-        // ✅ Store session data properly
+        // Store login session info
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['Email'] = $user['Email'];
         $_SESSION['Role'] = $userRole;
@@ -61,7 +74,8 @@ if ($result->num_rows === 1) {
 } else {
     echo "<script>alert('User not found!'); window.location.href='login.html';</script>";
 }
-
-$stmt->close();
-$conn->close();
+// Close prepared statement
+$stmt->close(); 
+// Close DB connection
+$conn->close(); 
 ?>
