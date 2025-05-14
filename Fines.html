@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <title>Fine Management</title>
+
+  <!-- Importing Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS for styling -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styling -->
   <style>
+    /* Base styling for the page */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -14,6 +22,8 @@
       flex-direction: column;
       min-height: 100vh;
     }
+
+    /* Styling for the top navbar */
     .navbar {
       background-color: #003366;
       color: white;
@@ -22,19 +32,27 @@
       justify-content: space-between;
       align-items: center;
     }
+
+    /* Logo style */
     .logo {
       font-size: 1.5rem;
       font-weight: bold;
     }
+
+    /* Navbar links container */
     .nav-links {
       display: flex;
       gap: 20px;
     }
+
+    /* Styling for nav links */
     .nav-links a {
       color: white;
       text-decoration: none;
       font-weight: 500;
     }
+
+    /* Logout button style */
     .logout-btn {
       background-color: #e74c3c;
       border: none;
@@ -44,10 +62,14 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    /* Main content padding */
     main {
       padding: 30px;
       flex-grow: 1;
     }
+
+    /* Headings */
     h1 {
       font-size: 1.8rem;
       margin-bottom: 5px;
@@ -56,6 +78,15 @@
       color: #666;
       margin-bottom: 20px;
     }
+
+    /* Search bar container */
+    .input-group {
+      max-width: 400px;
+      margin-left: auto;
+      margin-bottom: 20px;
+    }
+
+    /* Table styling */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -64,17 +95,25 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       margin-bottom: 30px;
     }
+
+    /* Table header styling */
     table thead {
       background-color: #4b6cb7;
       color: white;
     }
+
+    /* Table cell styling */
     th, td {
       padding: 14px;
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
+
+    /* Status colors */
     .unpaid { color: #e74c3c; font-weight: bold; }
     .paid { color: #2ecc71; font-weight: bold; }
+
+    /* Action buttons styling */
     .pay-btn, .edit-btn, .delete-btn {
       padding: 5px 10px;
       border: none;
@@ -83,16 +122,19 @@
       font-weight: bold;
       margin-right: 5px;
     }
+
     .pay-btn { background-color: #27ae60; color: white; }
     .edit-btn { background-color: #f39c12; color: white; }
     .delete-btn { background-color: #e74c3c; color: white; }
-    
   </style>
 </head>
 <body>
 
+<!-- Top Navigation Bar -->
 <header class="navbar">
   <div class="logo">📚 Admin Dashboard</div>
+
+  <!-- Navigation Links -->
   <nav class="nav-links">
     <a href="AdminDashBoard.html">Dashboard</a>
     <a href="RegisterStudent.html">Manage Users</a>
@@ -104,12 +146,23 @@
   </nav>
 </header>
 
+<!-- Main Page Content -->
 <main>
   <h1>Manage Fines</h1>
   <p class="subheading">Review and mark unpaid fines as paid or adjust for damaged/lost books.</p>
 
   <section>
     <h2>Fines</h2>
+
+    <!-- Search Input + Button -->
+    <div class="input-group mb-3">
+      <!-- Search Textbox -->
+      <input type="text" id="searchInput" class="form-control" placeholder="Search by Full Name or Book Title" onkeyup="searchFines()">
+      <!-- Search Button -->
+      <button class="btn btn-outline-primary" onclick="searchFines()">Search</button>
+    </div>
+
+    <!-- Table to display fines -->
     <table>
       <thead>
         <tr>
@@ -123,25 +176,29 @@
           <th>Actions</th>
         </tr>
       </thead>
+      <!-- Table body that will be filled dynamically -->
       <tbody id="unpaidFinesBody"></tbody>
     </table>
   </section>
 </main>
 
-
-
+<!-- JavaScript Section -->
 <script>
+  // Function to load fines from the server
   function loadFines() {
     fetch("get_fines.php")
       .then(res => res.text())
       .then(html => {
+        // Populate table with response HTML
         document.getElementById("unpaidFinesBody").innerHTML = html;
 
+        // Attach event listeners for Pay buttons
         document.querySelectorAll(".pay-btn").forEach(button => {
           button.addEventListener("click", () => {
             const fineID = button.getAttribute("data-fine-id");
             if (!confirm("Mark this fine as paid?")) return;
 
+            // Send POST request to mark as paid
             fetch("MarkFinePaid.php", {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -149,15 +206,17 @@
             })
             .then(res => res.text())
             .then(alert)
-            .then(loadFines);
+            .then(loadFines); // Reload fines after action
           });
         });
 
+        // Attach event listeners for Edit buttons
         document.querySelectorAll(".edit-btn").forEach(button => {
           button.addEventListener("click", () => {
             const fineID = button.getAttribute("data-fine-id");
             if (!confirm("Mark this book as damaged or lost? R600 will be added.")) return;
 
+            // Send POST request to adjust fine
             fetch("AdjustFine.php", {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -165,28 +224,43 @@
             })
             .then(res => res.text())
             .then(alert)
-            .then(loadFines);
+            .then(loadFines); // Reload fines after adjustment
           });
         });
       });
   }
 
+  // Function to filter/search through fines
+  function searchFines() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#unpaidFinesBody tr");
+
+    rows.forEach(row => {
+      const fullName = row.children[2]?.textContent.toLowerCase();
+      const bookTitle = row.children[3]?.textContent.toLowerCase();
+
+      // Show row if either name or title matches
+      if (fullName.includes(input) || bookTitle.includes(input)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+
+  // Load fines on page load (after updating them)
   window.onload = function () {
     fetch("update_fines.php").then(loadFines);
   };
-</script>
-<script>
+
+  // Logout confirmation and redirection
   function confirmLogout() {
-    // Show a confirmation popup
     const userConfirmed = confirm("Are you sure you want to log out?");
-    
-    // If the user clicks "OK" (Yes)
     if (userConfirmed) {
-      // Redirect to home.html
       window.location.href = "home.html";
     }
-    // If they click "Cancel", do nothing (stay on the page)
   }
 </script>
+
 </body>
 </html>

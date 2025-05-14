@@ -2,161 +2,260 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Borrowings Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Borrowing</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 0;
-      background-color: #f4f6f8;
+      padding: 2rem;
+      background-color: #f4f6f9;
     }
+
+    h1, h2 {
+      color: #2c3e50;
+    }
+
+    .navbar {
+      background-color: #003366;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      padding: 6px 10px;
+    }
+
+    .nav-links a:hover {
+      background-color: rgb(38, 166, 235);
+      border-radius: 6px;
+    }
+
     .logout-btn {
       background-color: #e74c3c;
       color: white;
-      padding: 10px 18px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
       border: none;
       border-radius: 20px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.3s, transform 0.2s;
     }
-    .navbar {
-      background-color: #003366;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+    .logout-btn:hover {
+      background-color: #c0392b;
+      transform: scale(1.03);
     }
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .nav-links a {
-      color: white;
-      margin-left: 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    h1 {
-      text-align: center;
-      margin-top: 30px;
-      color: #2c3e50;
-    }
+
     .container {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 20px;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+      margin-top: 2rem;
     }
-    .borrowing-form {
-      margin-bottom: 30px;
+
+    .form-section, .table-section {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
-    .borrowing-form h2 {
-      margin-bottom: 15px;
-      color: #34495e;
+
+    .form-group {
+      margin-bottom: 1rem;
     }
-    form label {
+
+    .form-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 0.4rem;
       font-weight: bold;
+      color: #333;
     }
-    form input, form select, form button {
+
+    .form-group input,
+    .form-group select {
       width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
+      padding: 0.6rem;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 6px;
+      font-size: 0.95rem;
     }
-    form button {
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.6rem 0.5rem;
       background-color: #2980b9;
       color: white;
       border: none;
-      cursor: pointer;
+      border-radius: 6px;
       font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    .table-section h2 {
-      margin-bottom: 10px;
-      color: #34495e;
+
+    button[type="submit"]:hover {
+      background-color: #1c5980;
+      transform: scale(1.02);
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 1rem;
     }
+
     th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
+      padding: 0.75rem;
       text-align: left;
+      border-bottom: 1px solid #ddd;
     }
+
     th {
       background-color: #2980b9;
       color: white;
     }
+
     .actions button {
-      background-color: #27ae60;
-      color: white;
+      padding: 5px 10px;
       border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: white;
       cursor: pointer;
-      margin: 2px;
+      margin-right: 5px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s ease, opacity 0.3s;
     }
-    .actions button.returned {
-      background-color: #e67e22;
+
+    .actions button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
     }
-    .actions button.lost {
-      background-color: #c0392b;
+
+    .returned { background-color: #e67e22; }
+    .lost { background-color: #c0392b; }
+
+    .search-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    #searchInput {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 250px;
+      font-size: 0.95rem;
+    }
+
+    .search-container button {
+      padding: 0.5rem 1rem;
+      background-color: #3498db;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-container button:hover {
+      background-color: #2c80b4;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .search-container {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
     }
   </style>
 </head>
-
 <body>
-
+  <!-- Navigation Bar -->
   <header class="navbar">
     <div class="logo">📚 Admin Dashboard</div>
     <nav class="nav-links">
       <a href="AdminDashBoard.html">Dashboard</a>
       <a href="RegisterStudent.html">Manage Users</a>
       <a href="AddBook.html">Books</a>
-      <a href="Borrowings.html">Borrowings</a>
+      <a href="Borrowings.html">Borrowing</a>
       <a href="Fines.html">Fines</a>
       <a href="Transactions.html">Transactions</a>
       <button class="logout-btn" onclick="confirmLogout()">Logout</button>
-      
     </nav>
   </header>
 
   <h1>Borrowings Management</h1>
 
   <div class="container">
-    <div class="borrowing-form">
+    <div class="form-section">
       <h2>Record Borrowing</h2>
       <form id="borrowingForm">
-        <label for="bookSelect">Select Book Title</label>
-        <select id="bookSelect" onchange="updateBookID()" required></select>
+        <div class="form-group">
+          <label for="bookSelect">Select Book Title</label>
+          <select id="bookSelect" onchange="updateBookID()" required></select>
+        </div>
 
-        <label for="bookId">Book ID</label>
-        <input type="text" id="bookId" name="bookId" readonly />
+        <div class="form-group">
+          <label for="bookId">Book ID</label>
+          <input type="text" id="bookId" name="bookId" readonly />
+        </div>
 
-        <label for="userFullName">Full Name</label>
-        <input list="userList" id="userFullName" oninput="updateUserIDFromName()" required />
-        <datalist id="userList"></datalist>
+        <div class="form-group">
+          <label for="userFullName">Full Name</label>
+          <input list="userList" id="userFullName" oninput="updateUserIDFromName()" required />
+          <datalist id="userList"></datalist>
+        </div>
 
-        <label for="userId">User ID</label>
-        <input type="text" id="userId" name="userId" readonly />
+        <div class="form-group">
+          <label for="userId">User ID</label>
+          <input type="text" id="userId" name="userId" readonly />
+        </div>
 
-        <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" name="quantity" min="1" required />
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity" min="1" required />
+        </div>
 
-        <label for="borrowDate">Borrow Date</label>
-        <input type="date" id="borrowDate" name="borrowDate" required />
+        <div class="form-group">
+          <label for="borrowDate">Borrow Date</label>
+          <input type="date" id="borrowDate" name="borrowDate" required />
+        </div>
 
-        <label for="returnDate">Return Date</label>
-        <input type="date" id="returnDate" name="returnDate" required />
+        <div class="form-group">
+          <label for="returnDate">Return Date</label>
+          <input type="date" id="returnDate" name="returnDate" required />
+        </div>
 
         <input type="hidden" name="bookTitle" id="bookTitle">
         <input type="hidden" name="fullName" id="fullName">
@@ -167,6 +266,10 @@
 
     <div class="table-section">
       <h2>Current Borrowings</h2>
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search by Full Name" onkeyup="searchBooks()" />
+        <button onclick="searchBooks()">Search</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -289,6 +392,15 @@
         .then(html => {
           tableBody.innerHTML = html;
         });
+    }
+
+    function searchBooks() {
+      const filter = document.getElementById('searchInput').value.toLowerCase();
+      const rows = tableBody.getElementsByTagName('tr');
+      Array.from(rows).forEach(row => {
+        const fullName = row.cells[3]?.textContent.toLowerCase() || "";
+        row.style.display = fullName.includes(filter) ? "" : "none";
+      });
     }
 
     function confirmLogout() {
