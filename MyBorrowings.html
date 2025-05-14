@@ -133,7 +133,7 @@
   </header>
 
   <main class="container">
-    <h1>My Borrowings</h1>
+    <h1>My Borrowings History</h1>
     <p id="fineStatus" class="fine-status"></p>
 
     <table>
@@ -190,7 +190,7 @@
             table.innerHTML = html;
 
             if (data.hasFine) {
-              fineStatus.innerText = "A fine has been issued.";
+              fineStatus.innerText = "A fine has been issued to you for unreturned book the higlighted one in your borrowings history.";
               fineStatus.className = "fine-status fine-issued";
             } else {
               fineStatus.innerText = "You have no fines currently.";
