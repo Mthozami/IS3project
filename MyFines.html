@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>My Fines</title>
   <style>
     body {
@@ -41,10 +41,23 @@
       color: #003366;
     }
 
+    .search-bar {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .search-bar input {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 250px;
+      font-size: 14px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     th, td {
@@ -70,6 +83,7 @@
     .profile-menu {
       position: relative;
       display: inline-block;
+      text-align: center;
     }
 
     .profile-icon {
@@ -79,6 +93,12 @@
       cursor: pointer;
       color: #fff;
       margin-left: 20px;
+    }
+
+    #userNameDisplay {
+      font-size: 13px;
+      color: white;
+      margin-top: 5px;
     }
 
     .dropdown-content {
@@ -111,11 +131,12 @@
   <div class="logo">📚 Siza Library</div>
   <nav class="nav-links">
     <a href="BorrowerDashboard.html">Dashboard</a>
-      <a href="MyBorrowings.html">My Borrowings</a>
-      <a href="MyFines.html">My Fines</a>
-      <a href="MyTransactions.html">My Transactions</a>
+    <a href="MyBorrowings.html">My Borrowings</a>
+    <a href="MyFines.html">My Fines</a>
+    <a href="MyTransactions.html">My Payments</a>
     <div class="profile-menu">
       <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+      <div id="userNameDisplay"></div>
       <div class="dropdown-content" id="profileDropdown">
         <a href="profile.html">Update Profile</a>
         <a href="home.html" onclick="confirmLogout()">Logout</a>
@@ -126,6 +147,11 @@
 
 <div class="container">
   <h1>My Fines History</h1>
+
+  <div class="search-bar">
+    <input type="text" id="fineSearchInput" placeholder="Search by Book Title..." onkeyup="filterFines()" />
+  </div>
+
   <table>
     <thead>
       <tr>
@@ -136,12 +162,14 @@
       </tr>
     </thead>
     <tbody id="finesTableBody">
-      <!-- Rows will be loaded here -->
+      <!-- Rows will be injected here -->
     </tbody>
   </table>
 </div>
 
 <script>
+  let allFines = [];
+
   function confirmLogout() {
     if (confirm("Are you sure you want to log out?")) {
       window.location.href = "home.html";
@@ -166,23 +194,40 @@
     fetch("MyFines.php")
       .then(response => response.json())
       .then(data => {
-        const tbody = document.getElementById("finesTableBody");
         if (data.success && data.rows.length > 0) {
-          tbody.innerHTML = data.rows.map(row => `
-            <tr>
-              <td>${row.CreatedAt}</td>
-              <td>${row.BookTitle}</td>
-              <td>R${parseFloat(row.Amount).toFixed(2)}</td>
-              <td class="${row.IsPaid ? 'status-paid' : 'status-unpaid'}">
-                ${row.IsPaid ? 'Paid' : 'Unpaid'}
-              </td>
-            </tr>
-          `).join('');
+          allFines = data.rows;
+          renderFines(allFines);
         } else {
-          tbody.innerHTML = "<tr><td colspan='4'>No fines found.</td></tr>";
+          document.getElementById("finesTableBody").innerHTML = "<tr><td colspan='4'>No fines found.</td></tr>";
+        }
+      });
+
+    fetch("get_profile.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("userNameDisplay").innerText = data.FullName;
         }
       });
   };
+
+  function renderFines(fines) {
+    const tbody = document.getElementById("finesTableBody");
+    tbody.innerHTML = fines.map(row => `
+      <tr>
+        <td>${row.CreatedAt}</td>
+        <td>${row.BookTitle}</td>
+        <td>R${parseFloat(row.Amount).toFixed(2)}</td>
+        <td class="${row.IsPaid ? 'status-paid' : 'status-unpaid'}">${row.IsPaid ? 'Paid' : 'Unpaid'}</td>
+      </tr>
+    `).join('');
+  }
+
+  function filterFines() {
+    const searchValue = document.getElementById("fineSearchInput").value.toLowerCase();
+    const filtered = allFines.filter(row => row.BookTitle.toLowerCase().includes(searchValue));
+    renderFines(filtered);
+  }
 </script>
 
 </body>
