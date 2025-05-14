@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Transaction History</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -56,13 +57,19 @@
       margin-bottom: 10px;
     }
 
+    .input-group {
+      max-width: 400px;
+      margin-bottom: 20px;
+      margin-left: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     thead {
@@ -75,8 +82,6 @@
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
-
-    
   </style>
 </head>
 <body>
@@ -96,6 +101,13 @@
 
   <main>
     <h1>Transaction History</h1>
+
+    <!-- Bootstrap Search Input Group -->
+    <div class="input-group mb-3">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search by User, Book, or Receipt" onkeyup="searchTransactions()">
+      <button class="btn btn-outline-primary" onclick="searchTransactions()">Search</button>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -114,8 +126,6 @@
     </table>
   </main>
 
- 
-
   <script>
     window.onload = function () {
       fetch("get_transactions.php")
@@ -128,19 +138,31 @@
             "<tr><td colspan='7'>Failed to load transactions.</td></tr>";
         });
     };
-  </script>
- <script>
-  function confirmLogout() {
-    // Show a confirmation popup
-    const userConfirmed = confirm("Are you sure you want to log out?");
-    
-    // If the user clicks "OK" (Yes)
-    if (userConfirmed) {
-      // Redirect to home.html
-      window.location.href = "home.html";
+
+    function searchTransactions() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#txnBody tr");
+
+      rows.forEach(row => {
+        const user = row.children[2]?.textContent.toLowerCase();
+        const book = row.children[3]?.textContent.toLowerCase();
+        const receipt = row.children[4]?.textContent.toLowerCase();
+
+        if (user.includes(input) || book.includes(input) || receipt.includes(input)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
     }
-    // If they click "Cancel", do nothing (stay on the page)
-  }
-</script>
+
+    function confirmLogout() {
+      const userConfirmed = confirm("Are you sure you want to log out?");
+      if (userConfirmed) {
+        window.location.href = "home.html";
+      }
+    }
+  </script>
+
 </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>My Borrowings</title>
   <style>
     body {
@@ -30,6 +30,7 @@
     .profile-menu {
       position: relative;
       display: inline-block;
+      text-align: center;
     }
 
     .profile-icon {
@@ -39,6 +40,12 @@
       cursor: pointer;
       color: #fff;
       margin-left: 20px;
+    }
+
+    #userNameDisplay {
+      font-size: 13px;
+      color: white;
+      margin-top: 5px;
     }
 
     .dropdown-content {
@@ -77,6 +84,19 @@
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .search-bar {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .search-bar input {
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+      font-size: 14px;
     }
 
     table {
@@ -124,6 +144,7 @@
       <a href="MyTransactions.html">My Payments</a>
       <div class="profile-menu">
         <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
+        <div id="userNameDisplay"></div>
         <div class="dropdown-content" id="profileDropdown">
           <a href="profile.html">Update Profile</a>
           <a href="home.html" onclick="confirmLogout()">Logout</a>
@@ -135,6 +156,10 @@
   <main class="container">
     <h1>My Borrowings History</h1>
     <p id="fineStatus" class="fine-status"></p>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by Book Title..." onkeyup="filterTable()">
+    </div>
 
     <table>
       <thead>
@@ -169,7 +194,10 @@
       }
     };
 
+    let allBorrowings = [];
+
     window.onload = function () {
+      // Load borrowings
       fetch("MyBorrowings.php")
         .then(response => response.json())
         .then(data => {
@@ -177,20 +205,11 @@
           const fineStatus = document.getElementById("fineStatus");
 
           if (data.success) {
-            let html = '';
-            data.rows.forEach(row => {
-              const rowClass = row.HasUnpaidFine ? 'highlight-fine' : '';
-              html += `<tr class="${rowClass}">
-                         <td>${row.Title}</td>
-                         <td>${row.BorrowedDate}</td>
-                         <td>${row.ReturnDate}</td>
-                       </tr>`;
-            });
-
-            table.innerHTML = html;
+            allBorrowings = data.rows;
+            renderTable(allBorrowings);
 
             if (data.hasFine) {
-              fineStatus.innerText = "A fine has been issued to you for unreturned book the higlighted one in your borrowings history.";
+              fineStatus.innerText = "A fine has been issued to you for unreturned book(s). Highlighted rows indicate the related borrowings.";
               fineStatus.className = "fine-status fine-issued";
             } else {
               fineStatus.innerText = "You have no fines currently.";
@@ -201,7 +220,38 @@
             fineStatus.innerText = "Could not determine fine status.";
           }
         });
+
+      // Load user name
+      fetch("get_profile.php")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("userNameDisplay").innerText = data.FullName;
+          }
+        });
     };
+
+    function renderTable(data) {
+      const table = document.getElementById("borrowingsTableBody");
+      let html = '';
+
+      data.forEach(row => {
+        const rowClass = row.HasUnpaidFine ? 'highlight-fine' : '';
+        html += `<tr class="${rowClass}">
+                   <td>${row.Title}</td>
+                   <td>${row.BorrowedDate}</td>
+                   <td>${row.ReturnDate}</td>
+                 </tr>`;
+      });
+
+      table.innerHTML = html;
+    }
+
+    function filterTable() {
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allBorrowings.filter(row => row.Title.toLowerCase().includes(searchValue));
+      renderTable(filtered);
+    }
   </script>
 
 </body>
