@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📚 Borrower Dashboard</title>
   <style>
+    /* Reset and base styling for the whole page */
     * {
       margin: 0;
       padding: 0;
@@ -20,6 +21,7 @@
       flex-direction: column;
     }
 
+    /* Styling for the logout button */
     .logout-btn {
       background-color: #e74c3c;
       color: white;
@@ -35,6 +37,7 @@
       background-color: #c0392b;
     }
 
+    /* Top navigation bar styling */
     .top-navbar {
       background-color: #003366;
       color: #fff;
@@ -55,6 +58,7 @@
       align-items: center;
     }
 
+    /* Navigation links style */
     .nav-links a {
       color: #fff;
       text-decoration: none;
@@ -68,11 +72,13 @@
       background-color: #005b99;
     }
 
+    /* Main content area */
     .dashboard-main {
       flex: 1;
       padding: 30px;
     }
 
+    /* Welcome message section */
     .welcome-section {
       margin-bottom: 30px;
       text-align: center;
@@ -88,6 +94,7 @@
       color: #444;
     }
 
+    /* Profile icon and dropdown menu */
     .profile-menu {
       position: relative;
       display: inline-block;
@@ -132,6 +139,7 @@
       background-color: #f1f1f1;
     }
 
+    /* Events and notices box styles */
     .events-section,
     .notices-section {
       background-color: #f4f7fb;
@@ -148,6 +156,7 @@
       text-align: center;
     }
 
+    /* Announcement list styling */
     .announcement-list {
       list-style: none;
       padding-left: 0;
@@ -182,6 +191,7 @@
       font-size: 14px;
     }
 
+    /* Animation for announcements */
     @keyframes fadeInSlide {
       0% {
         opacity: 0;
@@ -196,16 +206,20 @@
 </head>
 <body>
 
+  <!-- Top navigation bar -->
   <header class="top-navbar">
     <div class="logo">📚 Siza Library</div>
     <nav class="nav-links">
+      <!-- Navigation links -->
       <a href="BorrowerDashboard.html">Dashboard</a>
       <a href="MyBorrowings.html">My Borrowings</a>
       <a href="MyFines.html">My Fines</a>
       <a href="MyTransactions.html">My Payments</a>
+      
+      <!-- Profile section with dropdown -->
       <div class="profile-menu">
         <button class="profile-icon" onclick="toggleProfileMenu()">👤</button>
-        <div id="userNameDisplay"></div>
+        <div id="userNameDisplay"></div> <!-- User's name will be shown here -->
         <div class="dropdown-content" id="profileDropdown">
           <a href="profile.html">Update Profile</a>
           <a href="home.html" onclick="confirmLogout()">Logout</a>
@@ -214,12 +228,15 @@
     </nav>
   </header>
 
+  <!-- Main dashboard content -->
   <main class="dashboard-main">
+    <!-- Welcome text -->
     <section class="welcome-section">
       <h1>Your Library Activity Snapshot</h1>
       <p>Track your current borrowings, returns, and fines at a glance.</p>
     </section>
 
+    <!-- List of upcoming events -->
     <section class="events-section">
       <h3>📅 Upcoming Events</h3>
       <ul class="announcement-list">
@@ -238,6 +255,7 @@
       </ul>
     </section>
 
+    <!-- Library notices section -->
     <section class="notices-section">
       <h3>📢 Library Notices</h3>
       <ul class="announcement-list">
@@ -258,17 +276,20 @@
   </main>
 
   <script>
+    // Ask user for confirmation before logging out
     function confirmLogout() {
       if (confirm("Are you sure you want to log out?")) {
-        window.location.href = "home.html";
+        window.location.href = "home.html"; // Redirect to home page
       }
     }
 
+    // Show/hide the profile dropdown menu
     function toggleProfileMenu() {
       const dropdown = document.getElementById("profileDropdown");
       dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     }
 
+    // Close the dropdown menu if clicked outside
     window.onclick = function(event) {
       if (!event.target.matches('.profile-icon')) {
         const dropdown = document.getElementById("profileDropdown");
@@ -278,7 +299,7 @@
       }
     };
 
-    // Fetch and display user name under profile icon
+    // Fetch user's name from the server and display it
     fetch("get_profile.php")
       .then(res => res.json())
       .then(data => {
