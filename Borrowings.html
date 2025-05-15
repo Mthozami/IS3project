@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Borrowing</title>
   <style>
+    /* General body styling */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
@@ -12,10 +13,12 @@
       background-color: #f4f6f9;
     }
 
+    /* Heading color */
     h1, h2 {
       color: #2c3e50;
     }
 
+    /* Top navigation bar styling */
     .navbar {
       background-color: #003366;
       color: white;
@@ -26,17 +29,20 @@
       flex-wrap: wrap;
     }
 
+    /* Logo text */
     .navbar .logo {
       font-size: 1.5rem;
       font-weight: 600;
     }
 
+    /* Navigation links container */
     .nav-links {
       display: flex;
       align-items: center;
       gap: 20px;
     }
 
+    /* Navigation links styling */
     .nav-links a {
       color: white;
       text-decoration: none;
@@ -45,11 +51,13 @@
       padding: 6px 10px;
     }
 
+    /* Hover effect for links */
     .nav-links a:hover {
       background-color: rgb(38, 166, 235);
       border-radius: 6px;
     }
 
+    /* Logout button styling */
     .logout-btn {
       background-color: #e74c3c;
       color: white;
@@ -63,11 +71,13 @@
       transition: background-color 0.3s, transform 0.2s;
     }
 
+    /* Hover effect for logout button */
     .logout-btn:hover {
       background-color: #c0392b;
       transform: scale(1.03);
     }
 
+    /* Layout container for form and table sections */
     .container {
       display: grid;
       grid-template-columns: 1fr 2fr;
@@ -75,6 +85,7 @@
       margin-top: 2rem;
     }
 
+    /* Styling for both form and table containers */
     .form-section, .table-section {
       background-color: #fff;
       padding: 1.5rem;
@@ -82,10 +93,12 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
+    /* Form group spacing */
     .form-group {
       margin-bottom: 1rem;
     }
 
+    /* Label styling */
     .form-group label {
       display: block;
       margin-bottom: 0.4rem;
@@ -93,6 +106,7 @@
       color: #333;
     }
 
+    /* Input and select fields */
     .form-group input,
     .form-group select {
       width: 100%;
@@ -102,6 +116,7 @@
       font-size: 0.95rem;
     }
 
+    /* Submit button styling */
     button[type="submit"] {
       width: 100%;
       padding: 0.6rem 0.5rem;
@@ -116,28 +131,33 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
+    /* Submit button hover effect */
     button[type="submit"]:hover {
       background-color: #1c5980;
       transform: scale(1.02);
     }
 
+    /* Table layout */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
     }
 
+    /* Table cell padding and border */
     th, td {
       padding: 0.75rem;
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
 
+    /* Table header styling */
     th {
       background-color: #2980b9;
       color: white;
     }
 
+    /* Styling for action buttons (return/lost) */
     .actions button {
       padding: 5px 10px;
       border: none;
@@ -151,14 +171,17 @@
       transition: transform 0.2s ease, opacity 0.3s;
     }
 
+    /* Action button hover effect */
     .actions button:hover {
       transform: scale(1.05);
       opacity: 0.9;
     }
 
+    /* Return and lost button colors */
     .returned { background-color: #e67e22; }
     .lost { background-color: #c0392b; }
 
+    /* Search bar container */
     .search-container {
       display: flex;
       justify-content: flex-end;
@@ -166,6 +189,7 @@
       margin-bottom: 10px;
     }
 
+    /* Search input styling */
     #searchInput {
       padding: 0.5rem;
       border-radius: 6px;
@@ -174,6 +198,7 @@
       font-size: 0.95rem;
     }
 
+    /* Search button styling */
     .search-container button {
       padding: 0.5rem 1rem;
       background-color: #3498db;
@@ -185,10 +210,12 @@
       transition: background-color 0.3s ease;
     }
 
+    /* Hover effect for search button */
     .search-container button:hover {
       background-color: #2c80b4;
     }
 
+    /* Responsive adjustments for smaller screens */
     @media (max-width: 768px) {
       .container {
         grid-template-columns: 1fr;
@@ -215,55 +242,67 @@
     </nav>
   </header>
 
+  <!-- Page Title -->
   <h1>Borrowings Management</h1>
 
   <div class="container">
+    <!-- Borrowing Form Section -->
     <div class="form-section">
       <h2>Record Borrowing</h2>
       <form id="borrowingForm">
+        <!-- Book selection dropdown -->
         <div class="form-group">
           <label for="bookSelect">Select Book Title</label>
           <select id="bookSelect" onchange="updateBookID()" required></select>
         </div>
 
+        <!-- Book ID input (auto-filled) -->
         <div class="form-group">
           <label for="bookId">Book ID</label>
           <input type="text" id="bookId" name="bookId" readonly />
         </div>
 
+        <!-- User full name input with autocomplete -->
         <div class="form-group">
           <label for="userFullName">Full Name</label>
           <input list="userList" id="userFullName" oninput="updateUserIDFromName()" required />
           <datalist id="userList"></datalist>
         </div>
 
+        <!-- User ID input (auto-filled) -->
         <div class="form-group">
           <label for="userId">User ID</label>
           <input type="text" id="userId" name="userId" readonly />
         </div>
 
+        <!-- Quantity of books -->
         <div class="form-group">
           <label for="quantity">Quantity</label>
           <input type="number" id="quantity" name="quantity" min="1" required />
         </div>
 
+        <!-- Borrow date selection -->
         <div class="form-group">
           <label for="borrowDate">Borrow Date</label>
           <input type="date" id="borrowDate" name="borrowDate" required />
         </div>
 
+        <!-- Return date selection -->
         <div class="form-group">
           <label for="returnDate">Return Date</label>
           <input type="date" id="returnDate" name="returnDate" required />
         </div>
 
+        <!-- Hidden fields for storing selected book title and full name -->
         <input type="hidden" name="bookTitle" id="bookTitle">
         <input type="hidden" name="fullName" id="fullName">
 
+        <!-- Submit button -->
         <button type="submit">Add Borrowing</button>
       </form>
     </div>
 
+    <!-- Table Section Showing Current Borrowings -->
     <div class="table-section">
       <h2>Current Borrowings</h2>
       <div class="search-container">
@@ -295,6 +334,7 @@
     const tableBody = document.getElementById('borrowingTableBody');
     const usersMap = new Map();
 
+    // Handle form submission
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       const bookSelect = document.getElementById('bookSelect');
@@ -315,6 +355,7 @@
         .catch(err => alert("An error occurred."));
     });
 
+    // Mark borrowing as returned
     function markReturned(borrowingId, bookId, quantity) {
       const formData = new FormData();
       formData.append("borrowingId", borrowingId);
@@ -331,6 +372,7 @@
       });
     }
 
+    // Mark borrowing as lost and apply fine
     function markLost(borrowingId) {
       if (!confirm("Mark this book as lost/damaged and issue R600 fine?")) return;
       const formData = new FormData();
@@ -346,11 +388,13 @@
       });
     }
 
+    // Update book ID when selecting a title
     function updateBookID() {
       const bookSelect = document.getElementById("bookSelect");
       document.getElementById("bookId").value = bookSelect.value;
     }
 
+    // Fetch list of books from server
     function fetchBooks() {
       fetch("get_books.php?format=json")
         .then(res => res.json())
@@ -366,6 +410,7 @@
         });
     }
 
+    // Fetch list of users from server
     function fetchUsers() {
       fetch("get_users.php")
         .then(res => res.json())
@@ -381,11 +426,13 @@
         });
     }
 
+    // Update user ID based on name input
     function updateUserIDFromName() {
       const nameInput = document.getElementById("userFullName").value;
       document.getElementById("userId").value = usersMap.get(nameInput) || "";
     }
 
+    // Load borrowing records into table
     function loadBorrowings() {
       fetch("get_borrowings.php")
         .then(res => res.text())
@@ -394,6 +441,7 @@
         });
     }
 
+    // Search for borrowings by user full name
     function searchBooks() {
       const filter = document.getElementById('searchInput').value.toLowerCase();
       const rows = tableBody.getElementsByTagName('tr');
@@ -403,12 +451,14 @@
       });
     }
 
+    // Confirm and handle logout
     function confirmLogout() {
       if (confirm("Are you sure you want to log out?")) {
         window.location.href = "home.html";
       }
     }
 
+    // Load data when page loads
     window.onload = () => {
       fetchBooks();
       fetchUsers();
