@@ -10,6 +10,7 @@
       background-color: #f4f7fb;
       margin: 0;
       padding-bottom: 40px;
+      min-height: 100vh;
     }
 
     .navbar {
@@ -19,15 +20,31 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
 
     .nav-links a {
       color: white;
-      margin-left: 15px;
-      text-decoration: none;
-      font-weight: bold;
+          text-decoration: none;
+          font-weight: 500;
+          transition: 0.3s;
+          padding: 6px 10px;
+    }
+    .nav-links a:hover {
+     background-color: rgb(38, 166, 235);
+    border-radius: 6px;
     }
 
+     .navbar .logo {
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
     .profile-menu {
       position: relative;
       display: inline-block;
@@ -95,7 +112,7 @@
     }
 
     .info p {
-      font-size: 16px;
+      font-size: 20px;
       margin: 8px 0;
     }
 
