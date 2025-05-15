@@ -66,6 +66,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("No copies available.");
     }
 
+    // Start transaction
+    $conn->begin_transaction(); // I begin a safe transaction
+
     // I add the borrowing to the borrowings list
     $insertQuery = "
         INSERT INTO Borrowings (UserID, BookID, Quantity, BorrowedDate, ReturnDate, Status)
@@ -80,10 +83,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $updateQuery = "UPDATE Books SET Quantity = Quantity - 1 WHERE BookID = ?";
         $updateStmt = $conn->prepare($updateQuery);
         $updateStmt->bind_param("i", $bookId);
-        $updateStmt->execute();
-
-        echo "Borrowing recorded successfully.";
+        
+        if ($updateStmt->execute()) {
+            // All good, I save everything
+            $conn->commit(); 
+            echo "Borrowing recorded successfully.";
+        } else {
+            // I undo everything if update fails
+            $conn->rollback(); 
+            echo "Failed to update book quantity.";
+        }
     } else {
+         // I undo everything if insert fails
+        $conn->rollback();
         echo "Failed to record borrowing.";
     }
 } else {

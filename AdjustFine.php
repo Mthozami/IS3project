@@ -50,14 +50,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["fineID"])) {
     // STEP 2: I add R600 because the book was lost or broken 
     $adjustedAmount = $amount + 600;
 
+    // Start transaction
+    $conn->begin_transaction(); // Start safe transaction
+
     $stmt = $conn->prepare("UPDATE Fines SET Amount = ? WHERE FineID = ?");
      // Safe again from sql injection!
     $stmt->bind_param("di", $adjustedAmount, $fineID);
 
     if ($stmt->execute()) {
+        // Save the change
+        $conn->commit(); 
         //  updated fine  now!
         echo "Fine adjusted for damage/loss. New amount: R" . number_format($adjustedAmount, 2);
     } else {
+        // Undo on failure
+        $conn->rollback(); 
         http_response_code(500);
         echo "Failed to adjust fine.";
     }

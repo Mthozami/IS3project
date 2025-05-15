@@ -18,16 +18,23 @@ if (isset($_POST['title'], $_POST['quantity'], $_POST['isbn'])) {
     $quantity = intval($_POST['quantity']); 
     $isbn = $_POST['isbn'];
 
+    // Start transaction
+    $conn->begin_transaction(); // I start a safe transaction
+
     // Now I insert the book into my shelf safely
     $stmt = $conn->prepare("INSERT INTO Books (Title, Quantity, ISBN) VALUES (?, ?, ?)");
     // Safe! No SQL injection!
     $stmt->bind_param("sis", $title, $quantity, $isbn); 
 
     if ($stmt->execute()) {
-    //  Go back to the add page with a smile
+        // All good, I save the changes
+        $conn->commit(); 
+        //  Go back to the add page with a smile
         header("Location: AddBook.html?success=true"); 
         exit;
     } else {
+        // Something went wrong, I undo
+        $conn->rollback(); 
         echo "Error: " . $stmt->error;
     }
 
