@@ -1,14 +1,14 @@
 <?php
-session_start();
+session_start(); // We start the session to remember who is logged in
 header("Content-Type: application/json");
 
-// Database configuration
+// This is where we connect to the library database
 $host = "localhost";
 $db = "LibraryDB";
 $user = "root";
 $pass = "Mthozami@2004";
 
-// Connect to the database
+// Try to talk to the database
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     echo json_encode([
@@ -18,7 +18,7 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Check if user is logged in
+// If no one is logged in, we stop here
 if (!isset($_SESSION["UserID"])) {
     echo json_encode([
         "success" => false,
@@ -27,15 +27,17 @@ if (!isset($_SESSION["UserID"])) {
     exit;
 }
 
+// Get the ID of the user who is logged in
 $userId = $_SESSION["UserID"];
 
-// Prepare and execute SQL statement
+// We ask the database for info about this user (like name, email, phone)
+// We use a safe method here called "prepare", to stop hackers
 $stmt = $conn->prepare("SELECT FullName, Email, PhoneNumber FROM Users WHERE UserID = ?");
-$stmt->bind_param("i", $userId);
+$stmt->bind_param("i", $userId); // Make sure the ID is a number
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Return user data
+// If we find the user, we show their info
 if ($result && $result->num_rows > 0) {
     $user = $result->fetch_assoc();
     echo json_encode([
@@ -51,6 +53,7 @@ if ($result && $result->num_rows > 0) {
     ]);
 }
 
+// We are done talking to the database
 $stmt->close();
 $conn->close();
 ?>

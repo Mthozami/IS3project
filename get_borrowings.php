@@ -1,13 +1,16 @@
 <?php
+// This is where we tell the computer how to talk to the database
 $host = "localhost";
 $dbname = "LibraryDB";
 $username = "root";
 $password = "Mthozami@2004";
 
 try {
+    // Try to connect to the library database
     $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Get all the books that have been borrowed and the info about them
     $stmt = $conn->prepare("
         SELECT 
             b.BorrowingID,
@@ -28,8 +31,11 @@ try {
         ORDER BY b.BorrowingID ASC
     ");
     $stmt->execute();
+
+    // Get all the rows back
     $borrowings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Show each row as a line in a table
     foreach ($borrowings as $row) {
         $status = htmlspecialchars($row['Status']);
         $borrowingID = htmlspecialchars($row['BorrowingID']);
@@ -48,6 +54,7 @@ try {
         echo "<td>" . htmlspecialchars($row['ReturnDate']) . "</td>";
         echo "<td>{$status}</td>";
 
+        // Show buttons based on status
         echo "<td class='actions'>";
         if ($status === 'borrowed') {
             if ($hasFine) {
@@ -55,7 +62,6 @@ try {
             } else {
                 echo "<button onclick='markReturned(\"{$borrowingID}\", \"{$bookID}\", \"{$quantity}\")' class='returned'>Mark Returned</button>";
             }
-            // Always allow "Mark as Lost"
             echo "<button onclick='markLost(\"{$borrowingID}\")' class='lost'>Mark as Lost</button>";
         } else {
             echo "-";
