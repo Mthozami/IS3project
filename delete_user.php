@@ -18,27 +18,35 @@ if (isset($_GET['userId'])) {
         die("Connection failed: " . $conn->connect_error);
     }
 
+    // Begin transaction
+    $conn->begin_transaction(); // Start transaction
+
     // We prepare a query to delete the user safely
     $sql = "DELETE FROM users WHERE userId = ?";
-    //  Safe from SQL injection
+    // Safe from SQL injection
     $stmt = $conn->prepare($sql); 
-     // "i" means it’s an integer number
+    // "i" means it’s an integer number
     $stmt->bind_param("i", $userId);
-     //  Run the delete
+
+    // Run the delete
     $stmt->execute();
 
-    //  Let the user know what happened
+    // Let the user know what happened
     if ($stmt->affected_rows > 0) {
+        // Commit transaction if successful
+        $conn->commit(); 
         echo "User deleted successfully.";
     } else {
+        // Rollback if nothing deleted
+        $conn->rollback(); 
         echo "Error deleting user.";
     }
 
-    //  Clean up
+    // Clean up
     $stmt->close(); 
     $conn->close();
 
-    //  Go back to the Borrower page
+    // Go back to the Borrower page
     header("Location:RegisterStudent.html");
     exit;
 }

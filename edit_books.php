@@ -1,5 +1,5 @@
 <?php
-//  This file edits a book’s details
+// This file edits a book’s details
 
 // Connect to the database using PDO (a safe method)
 $host = "localhost";
@@ -12,11 +12,11 @@ try {
     // Show errors if anything goes wrong
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 } catch (PDOException $e) {
-     // Show error if can't connect
+    // Show error if can't connect
     die("Connection failed: " . $e->getMessage());
 }
 
-//  If we are coming from the Edit button (GET method)
+// If we are coming from the Edit button (GET method)
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['BookID'])) {
     $bookID = $_GET['BookID'];
     $title = $_GET['Title'] ?? '';
@@ -53,11 +53,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $quantity = $_POST['quantity'];
     $isbn = $_POST['isbn'];
 
-    // Prepare a safe update query
-    $stmt = $db->prepare("UPDATE books SET title = ?, quantity = ?, isbn = ? WHERE id = ?");
-    // Use array values safely
-    $success = $stmt->execute([$title, $quantity, $isbn, $bookID]); 
+    try {
+        // Begin transaction
+        $db->beginTransaction(); // Start transaction
 
-    echo $success ? "success" : "error";
+        // Prepare a safe update query
+        $stmt = $db->prepare("UPDATE books SET title = ?, quantity = ?, isbn = ? WHERE id = ?");
+        // Use array values safely
+        $success = $stmt->execute([$title, $quantity, $isbn, $bookID]);
+
+        if ($success) {
+            // Commit if successful
+            $db->commit(); 
+            echo "success";
+        } else {
+            // Rollback if failed
+            $db->rollBack(); 
+            echo "error";
+        }
+    } catch (PDOException $e) {
+        // Rollback on exception
+        $db->rollBack(); 
+        echo "error: " . $e->getMessage();
+    }
 }
 ?>

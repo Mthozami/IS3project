@@ -16,20 +16,26 @@ if ($conn->connect_error) {
 
 // Check if we were given a book ID
 if (isset($_GET['BookID'])) {
-    //  Turn input into number to stay safe
+    // Turn input into number to stay safe
     $bookID = intval($_GET['BookID']); 
+
+    // Begin transaction
+    $conn->begin_transaction(); // Start transaction
 
     // Prepare a safe delete query
     $stmt = $conn->prepare("DELETE FROM Books WHERE BookID = ?");
     // i means integer
     $stmt->bind_param("i", $bookID); 
 
-    //  Try to delete the book
+    // Try to delete the book
     if ($stmt->execute()) {
-        //  Go back to the book list
+        // Commit if successful
+        $conn->commit(); 
         header("Location: AddBook.html");
         exit;
     } else {
+        // Rollback if failed
+        $conn->rollback(); 
         echo "Error: " . $stmt->error;
     }
 
