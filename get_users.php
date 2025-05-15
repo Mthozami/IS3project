@@ -1,68 +1,60 @@
 <?php
-session_start(); // We start the session to remember who is logged in
-header("Content-Type: application/json");
-
-// This is where we connect to the library database
+// Set database connection variables
 $host = "localhost";
-$db = "LibraryDB";
-$user = "root";
-$pass = "Mthozami@2004";
+$username = "root";
+$password = "Mthozami@2004";
+$dbname = "LibraryDB";
 
-// Try to talk to the database
-$conn = new mysqli($host, $user, $pass, $db);
+// Create a new MySQLi connection
+$conn = new mysqli($host, $username, $password, $dbname);
+
+// Check for connection error
 if ($conn->connect_error) {
-    echo json_encode([
-        "success" => false,
-        "error" => "Database connection failed: " . $conn->connect_error
-    ]);
-    exit;
+  // If connection fails, return a JSON error response and stop execution
+  echo json_encode(['error' => 'Connection failed', 'message' => $conn->connect_error]);
+  exit();
 }
 
 // Begin transaction
 $conn->begin_transaction();
 
-// If no one is logged in, we stop here
-if (!isset($_SESSION["UserID"])) {
-    echo json_encode([
-        "success" => false,
-        "error" => "User not logged in"
-    ]);
-    // Commit before exit
-    $conn->commit(); 
-    exit;
+try {
+  // SQL query to fetch all users from the "users" table
+  $sql = "SELECT UserID, FullName, Email, Password, PhoneNumber, Role, CreatedAt FROM users ORDER BY userId ASC";
+
+  // Execute the query
+  $result = $conn->query($sql);
+
+  // Initialize an empty array to hold the user records
+  $users = [];
+
+  // If the result is valid and contains rows
+  if ($result && $result->num_rows > 0) {
+    // Fetch each row and add it to the $users array
+    while ($row = $result->fetch_assoc()) {
+      $users[] = $row;
+    }
+  } else {
+    // If no users found, return a message in the array
+    $users = ['message' => 'No users found'];
+  }
+
+  // Commit the transaction
+  $conn->commit();
+} catch (Exception $e) {
+  // If any error occurs, rollback the transaction
+  $conn->rollback();
+  echo json_encode(['error' => 'Transaction failed', 'message' => $e->getMessage()]);
+  $conn->close();
+  exit();
 }
 
-// Get the ID of the user who is logged in
-$userId = $_SESSION["UserID"];
+// Set the response type to JSON
+header('Content-Type: application/json');
 
-// We ask the database for info about this user (like name, email, phone)
-// We use a safe method here called "prepare", to stop hackers
-$stmt = $conn->prepare("SELECT FullName, Email, PhoneNumber FROM Users WHERE UserID = ?");
-// Make sure the ID is a number
-$stmt->bind_param("i", $userId); 
-$stmt->execute();
-$result = $stmt->get_result();
+// Output the result as a JSON object
+echo json_encode($users);
 
-// If we find the user, we show their info
-if ($result && $result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    echo json_encode([
-        "success" => true,
-        "FullName" => $user["FullName"],
-        "Email" => $user["Email"],
-        "PhoneNumber" => $user["PhoneNumber"]
-    ]);
-} else {
-    echo json_encode([
-        "success" => false,
-        "error" => "User not found"
-    ]);
-}
-
-// Commit transaction
-$conn->commit();
-
-// We are done talking to the database
-$stmt->close();
+// Close the database connection
 $conn->close();
 ?>
