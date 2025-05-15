@@ -44,6 +44,9 @@ if (!$fullName || !$email || !$phone) {
     exit("Please fill in all required fields.");
 }
 
+// Start transaction
+$conn->begin_transaction(); // Start of database transaction
+
 // If the user typed a new password, we need to check more
 if (!empty($newPassword)) {
 
@@ -90,9 +93,13 @@ if (!empty($newPassword)) {
 
 // Try to update the user's info
 if ($stmt->execute()) {
+    // Commit transaction
+    $conn->commit(); // Save changes if successful
+
     // Tell the user that an update has been succesful
     echo "Profile updated successfully!"; 
 } else {
+    $conn->rollback(); // Undo changes on failure
     http_response_code(500);
     // Show the error if it failed
     echo "Failed to update profile: " . $conn->error; 

@@ -18,6 +18,9 @@ if ($conn->connect_error) {
     exit; 
 }
 
+// Start transaction
+$conn->begin_transaction(); // Start of database transaction
+
 /* SQL query to fetch all borrowings that are still marked as 'borrowed'
 and where the return date has already passed (i.e., they are overdue)*/
 $query = "
@@ -79,6 +82,12 @@ if ($result && $result->num_rows > 0) {
             }
         }
     }
+
+    // Commit transaction after processing all fines
+    $conn->commit(); // Save changes if successful
+} else {
+    // Nothing to process, commit empty transaction
+    $conn->commit();
 }
 
 // Close the database connection

@@ -23,6 +23,9 @@ if (isset($_POST['UserID'])) {
         die("Connection failed: " . $conn->connect_error);
     }
 
+    // Start transaction
+    $conn->begin_transaction(); // Start of database transaction
+
     // Make the update message (with ? placeholders to avoid bad code tricks)
     $sql = "UPDATE Users SET FullName = ?, Email = ?, PhoneNumber = ?, Role = ? WHERE UserID = ?";
     
@@ -34,10 +37,16 @@ if (isset($_POST['UserID'])) {
 
     // Try to do the update
     if ($stmt->execute()) {
+        // Commit transaction
+        $conn->commit(); // Save changes if successful
+
         // If everything worked, go back to the student registration page and say "updated=true"
         header("Location: RegisterStudent.html?updated=true");
         exit; // Stop the script now
     } else {
+        // Rollback transaction if there's an error
+        $conn->rollback(); // Undo changes on failure
+
         // If something went wrong, show the error
         echo "Error updating user: " . $stmt->error;
     }
