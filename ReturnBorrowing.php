@@ -27,41 +27,59 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
   }
 
-  // Step 1: Check if this borrowing already exists and hasn’t been returned
-  $checkStmt = $conn->prepare("SELECT Status FROM Borrowings WHERE BorrowingID = ?");
-  $checkStmt->bind_param("i", $borrowingId);
-  $checkStmt->execute();
-  $result = $checkStmt->get_result();
+  // Start a database transaction
+  $conn->begin_transaction();
 
-  // If no record found
-  if ($result === false || $result->num_rows === 0) {
-    echo "Borrowing record not found.";
-    exit;
+  try {
+    // Step 1: Check if this borrowing already exists and hasn’t been returned
+    $checkStmt = $conn->prepare("SELECT Status FROM Borrowings WHERE BorrowingID = ?");
+    $checkStmt->bind_param("i", $borrowingId);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+
+    // If no record found
+    if ($result === false || $result->num_rows === 0) {
+      echo "Borrowing record not found.";
+      $conn->rollback(); // Roll back on failure
+      exit;
+    }
+
+    $row = $result->fetch_assoc();
+    if (strtolower($row["Status"]) === "returned") {
+      echo "This book has already been marked as returned.";
+      $conn->rollback(); // Roll back if already returned
+      exit;
+    }
+
+    // Step 2: Mark the book as returned
+    $updateStmt = $conn->prepare("UPDATE Borrowings SET Status = 'returned' WHERE BorrowingID = ?");
+    $updateStmt->bind_param("i", $borrowingId);
+    if (!$updateStmt->execute()) {
+      echo "Failed to update borrowing status.";
+      $conn->rollback(); // Roll back on failure
+      exit;
+    }
+
+    // Step 3: Add the book back to the stock
+    $bookUpdateStmt = $conn->prepare("UPDATE Books SET Quantity = Quantity + ? WHERE BookID = ?");
+    $bookUpdateStmt->bind_param("ii", $quantity, $bookId);
+    if (!$bookUpdateStmt->execute()) {
+      echo "Failed to update book quantity.";
+      $conn->rollback(); // Roll back on failure
+      exit;
+    }
+
+    // If everything worked, commit the transaction
+    $conn->commit();
+
+    echo "Book returned successfully.";
+
+  } catch (Exception $e) {
+    // In case of any error, roll back the transaction
+    $conn->rollback();
+    echo "An unexpected error occurred.";
   }
 
-  $row = $result->fetch_assoc();
-  if (strtolower($row["Status"]) === "returned") {
-    echo "This book has already been marked as returned.";
-    exit;
-  }
-
-  // Step 2: Mark the book as returned
-  $updateStmt = $conn->prepare("UPDATE Borrowings SET Status = 'returned' WHERE BorrowingID = ?");
-  $updateStmt->bind_param("i", $borrowingId);
-  if (!$updateStmt->execute()) {
-    echo "Failed to update borrowing status.";
-    exit;
-  }
-
-  // Step 3: Add the book back to the stock
-  $bookUpdateStmt = $conn->prepare("UPDATE Books SET Quantity = Quantity + ? WHERE BookID = ?");
-  $bookUpdateStmt->bind_param("ii", $quantity, $bookId);
-  if (!$bookUpdateStmt->execute()) {
-    echo "Failed to update book quantity.";
-    exit;
-  }
-
-  echo "Book returned successfully.";
 } else {
   echo "Invalid request.";
 }

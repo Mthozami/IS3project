@@ -16,6 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $quantity = $_POST["quantity"];
   $isbn = $_POST["isbn"];
 
+  // Begin transaction
+  $conn->begin_transaction(); // Start transaction for updating book
+
   //  Use a prepared SQL statement (helps prevent bad people from hacking it)
   $stmt = $conn->prepare("UPDATE books SET Title = ?, Quantity = ?, ISBN = ? WHERE BookID = ?");
 
@@ -24,11 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Try to update the book in the database
   if ($stmt->execute()) {
-    //  If it worked, show a message and send user back to AddBook.html
+    // Commit if successful
+    $conn->commit(); 
     echo "<script>alert('Book updated successfully.'); window.location.href='AddBook.html';</script>";
     exit;
   } else {
-    //  If something failed, show an error message
+    // Rollback if update fails
+    $conn->rollback(); 
     echo "<script>alert('Error updating book: " . $conn->error . "');</script>";
   }
 

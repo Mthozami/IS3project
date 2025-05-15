@@ -28,20 +28,29 @@ if (
   // Hash the password
   $hashedPassword = password_hash($rawPassword, PASSWORD_DEFAULT);
 
+  // Begin transaction
+  $conn->begin_transaction(); // Start transaction
+
   // Prepare SQL query
   $sql = "INSERT INTO Users (FullName, Email, Password, PhoneNumber, Role, CreatedAt)
           VALUES (?, ?, ?, ?, ?, ?)";
 
   $stmt = $conn->prepare($sql);
   if (!$stmt) {
+    // Rollback on error
+    $conn->rollback(); 
     die("Prepare failed: " . $conn->error);
   }
 
   $stmt->bind_param("ssssss", $fullName, $email, $hashedPassword, $phone, $role, $createdAt);
 
   if ($stmt->execute()) {
+     // Commit on success
+    $conn->commit();
     echo "<script>alert('User registered successfully!'); window.location.href='RegisterStudent.html';</script>";
   } else {
+    // Rollback on failure
+    $conn->rollback(); 
     echo "Error: " . $stmt->error;
   }
 
