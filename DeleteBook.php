@@ -1,29 +1,32 @@
 <?php
-// DeleteBook.php
+// This file deletes a book from the library
 
+// Connect to the library database
 $host = 'localhost';
 $username = 'root';
 $password = 'Mthozami@2004';
 $dbname = 'LibraryDB';
 
-// Connect to the database
 $conn = new mysqli($host, $username, $password, $dbname);
 
-// Check connection
+// Show error if connection doesn't work
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if BookID is received via GET
+// Check if we were given a book ID
 if (isset($_GET['BookID'])) {
-    $bookID = intval($_GET['BookID']); // Sanitize the input to avoid SQL injection
+    //  Turn input into number to stay safe
+    $bookID = intval($_GET['BookID']); 
 
-    // Prepare and execute delete statement
+    // Prepare a safe delete query
     $stmt = $conn->prepare("DELETE FROM Books WHERE BookID = ?");
-    $stmt->bind_param("i", $bookID);
+    // i means integer
+    $stmt->bind_param("i", $bookID); 
 
+    //  Try to delete the book
     if ($stmt->execute()) {
-        // Redirect to the Book Management page after deletion
+        //  Go back to the book list
         header("Location: AddBook.html");
         exit;
     } else {

@@ -1,5 +1,7 @@
 <?php
-// ✅ Include database connection using PDO
+//  This file edits a book’s details
+
+// Connect to the database using PDO (a safe method)
 $host = "localhost";
 $dbname = "LibraryDB";
 $username = "root";
@@ -7,12 +9,14 @@ $password = "@Mthozami@2004";
 
 try {
     $db = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Show errors if anything goes wrong
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 } catch (PDOException $e) {
+     // Show error if can't connect
     die("Connection failed: " . $e->getMessage());
 }
 
-// ✅ SHOW FORM WHEN ACCESSED VIA GET (Edit button sends data via GET)
+//  If we are coming from the Edit button (GET method)
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['BookID'])) {
     $bookID = $_GET['BookID'];
     $title = $_GET['Title'] ?? '';
@@ -20,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['BookID'])) {
     $isbn = $_GET['ISBN'] ?? '';
     ?>
 
-    <!-- ✅ Edit Form -->
+    <!-- Form to change book information -->
     <h2>Edit Book</h2>
     <form method="POST" action="edit_books.php">
         <input type="hidden" name="bookID" value="<?= htmlspecialchars($bookID) ?>">
@@ -42,25 +46,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['BookID'])) {
 <?php
 }
 
-// ✅ ORIGINAL POST HANDLER (Do not remove)
+// If form was submitted (POST method)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $bookID = $_POST['bookID'];  // The book ID to identify which record to update
-    $title = $_POST['title'];    // The new title for the book
-    $quantity = $_POST['quantity'];  // The new quantity of the book
-    $isbn = $_POST['isbn'];  // The new ISBN for the book
+    $bookID = $_POST['bookID'];
+    $title = $_POST['title'];
+    $quantity = $_POST['quantity'];
+    $isbn = $_POST['isbn'];
 
-    // Debugging: Log the received values
-    error_log("Received data: BookID: $bookID, Title: $title, Quantity: $quantity, ISBN: $isbn");
+    // Prepare a safe update query
+    $stmt = $db->prepare("UPDATE books SET title = ?, quantity = ?, isbn = ? WHERE id = ?");
+    // Use array values safely
+    $success = $stmt->execute([$title, $quantity, $isbn, $bookID]); 
 
-    if ($bookID && $title && $quantity && $isbn) {
-        $stmt = $conn->prepare("UPDATE books SET title = ?, quantity = ?, isbn = ? WHERE id = ?");
-        $stmt->bind_param("sisi", $title, $quantity, $isbn, $bookID);
-
-        echo $stmt->execute() ? "success" : "error";
-        $stmt->close();
-    } else {
-        echo "error";
-    }
-    $conn->close();
+    echo $success ? "success" : "error";
 }
 ?>
