@@ -30,60 +30,73 @@ if ($conn->connect_error) {
     exit;
 }
 
-// SQL to get borrowings and check if there's any unpaid fine
-$sql = "SELECT 
-            b.Title,                 -- Book title
-            br.BorrowedDate,         -- Date borrowed
-            br.ReturnDate,           -- Due date
-            EXISTS (                 -- Check if there is any unpaid fine
-                SELECT 1 FROM Fines f 
-                WHERE f.BorrowingID = br.BorrowingID AND f.IsPaid = 0
-            ) AS HasUnpaidFine       -- Will be 1 if there’s an unpaid fine
-        FROM Borrowings br
-        INNER JOIN Books b ON br.BookID = b.BookID
-        WHERE br.UserID = ?";
+try {
+    // Start transaction
+    $conn->begin_transaction();
 
-// Prepare the SQL query safely (to prevent SQL injection)
-$stmt = $conn->prepare($sql);
+    // SQL to get borrowings and check if there's any unpaid fine
+    $sql = "SELECT 
+                b.Title,                 -- Book title
+                br.BorrowedDate,         -- Date borrowed
+                br.ReturnDate,           -- Due date
+                EXISTS (                 -- Check if there is any unpaid fine
+                    SELECT 1 FROM Fines f 
+                    WHERE f.BorrowingID = br.BorrowingID AND f.IsPaid = 0
+                ) AS HasUnpaidFine       -- Will be 1 if there’s an unpaid fine
+            FROM Borrowings br
+            INNER JOIN Books b ON br.BookID = b.BookID
+            WHERE br.UserID = ?";
 
-// Put the user ID into the query
-$stmt->bind_param("i", $userID);
+    // Prepare the SQL query safely (to prevent SQL injection)
+    $stmt = $conn->prepare($sql);
 
-// Run the query
-$stmt->execute();
+    // Put the user ID into the query
+    $stmt->bind_param("i", $userID);
 
-// Get the results back
-$result = $stmt->get_result();
+    // Run the query
+    $stmt->execute();
 
-// Make an empty list to keep all borrowings
-$borrowings = [];
+    // Get the results back
+    $result = $stmt->get_result();
 
-// A flag to check if the user has any unpaid fines
-$hasAnyUnpaidFine = false;
+    // Make an empty list to keep all borrowings
+    $borrowings = [];
 
-// Go through every row (book borrowing)
-while ($row = $result->fetch_assoc()) {
-    // If this book has an unpaid fine, set the flag to true
-    if ($row["HasUnpaidFine"]) {
-        $hasAnyUnpaidFine = true;
+    // A flag to check if the user has any unpaid fines
+    $hasAnyUnpaidFine = false;
+
+    // Go through every row (book borrowing)
+    while ($row = $result->fetch_assoc()) {
+        // If this book has an unpaid fine, set the flag to true
+        if ($row["HasUnpaidFine"]) {
+            $hasAnyUnpaidFine = true;
+        }
+
+        // Add this borrowing to the list
+        $borrowings[] = [
+            "Title" => $row["Title"],
+            "BorrowedDate" => $row["BorrowedDate"],
+            "ReturnDate" => $row["ReturnDate"],
+            "HasUnpaidFine" => (bool)$row["HasUnpaidFine"] // Convert 1 or 0 to true/false
+        ];
     }
 
-    // Add this borrowing to the list
-    $borrowings[] = [
-        "Title" => $row["Title"],
-        "BorrowedDate" => $row["BorrowedDate"],
-        "ReturnDate" => $row["ReturnDate"],
-        "HasUnpaidFine" => (bool)$row["HasUnpaidFine"] // Convert 1 or 0 to true/false
-    ];
+    // Commit transaction
+    $conn->commit();
+
+    // Send the borrowings and fine info back as JSON
+    echo json_encode([
+        "success" => true,
+        "rows" => $borrowings,
+        "hasFine" => $hasAnyUnpaidFine
+    ]);
+} catch (Exception $e) {
+    // Roll back transaction on error
+    $conn->rollback();
+    echo json_encode(["success" => false, "message" => "Error retrieving borrowings"]);
 }
 
 // Close the statement and database connection
 $stmt->close();
 $conn->close();
-
-// Send the borrowings and fine info back as JSON
-echo json_encode([
-    "success" => true,
-    "rows" => $borrowings,
-    "hasFine" => $hasAnyUnpaidFine
-]);
+?>

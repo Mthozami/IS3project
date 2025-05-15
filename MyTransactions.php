@@ -29,41 +29,53 @@ if (!isset($_SESSION["UserID"])) {
 // Get the ID of the logged-in user
 $userId = $_SESSION["UserID"];
 
-// This SQL gets the user's payments from the database
-$sql = "
-  SELECT t.ReceiptNumber, t.PaymentDate, t.PaidAmount
-  FROM Transactions t
-  JOIN Fines f ON t.FineID = f.FineID
-  JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
-  WHERE b.UserID = ?
-  ORDER BY t.PaymentDate DESC
-";
+try {
+    // Start transaction
+    $conn->begin_transaction();
 
-// Prepare the SQL safely (prevents SQL injection)
-$stmt = $conn->prepare($sql);
+    // This SQL gets the user's payments from the database
+    $sql = "
+      SELECT t.ReceiptNumber, t.PaymentDate, t.PaidAmount
+      FROM Transactions t
+      JOIN Fines f ON t.FineID = f.FineID
+      JOIN Borrowings b ON f.BorrowingID = b.BorrowingID
+      WHERE b.UserID = ?
+      ORDER BY t.PaymentDate DESC
+    ";
 
-// Put the user ID into the SQL query
-$stmt->bind_param("i", $userId);
+    // Prepare the SQL safely (prevents SQL injection)
+    $stmt = $conn->prepare($sql);
 
-// Run the query
-$stmt->execute();
+    // Put the user ID into the SQL query
+    $stmt->bind_param("i", $userId);
 
-// Get all the rows (results) back
-$result = $stmt->get_result();
+    // Run the query
+    $stmt->execute();
 
-// Make an empty list to hold each payment row
-$rows = [];
+    // Get all the rows (results) back
+    $result = $stmt->get_result();
 
-// Go through each row and add it to the list
-while ($row = $result->fetch_assoc()) {
-    $rows[] = $row;
+    // Make an empty list to hold each payment row
+    $rows = [];
+
+    // Go through each row and add it to the list
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+
+    // Commit transaction
+    $conn->commit();
+
+    // Send all the rows back as JSON
+    echo json_encode([
+        "success" => true,
+        "rows" => $rows
+    ]);
+} catch (Exception $e) {
+    // Roll back if anything fails
+    $conn->rollback();
+    echo json_encode(["success" => false, "message" => "Error retrieving payments"]);
 }
-
-// Send all the rows back as JSON
-echo json_encode([
-  "success" => true,
-  "rows" => $rows
-]);
 
 // Close the SQL statement and the database connection
 $stmt->close();
