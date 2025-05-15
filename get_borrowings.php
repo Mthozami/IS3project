@@ -9,6 +9,9 @@ try {
     // Try to connect to the library database
     $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+     
+    // Start transaction
+    $conn->beginTransaction(); 
 
     // Get all the books that have been borrowed and the info about them
     $stmt = $conn->prepare("
@@ -69,7 +72,12 @@ try {
         echo "</td></tr>";
     }
 
+    // Commit if all successful
+    $conn->commit(); 
+
 } catch (PDOException $e) {
+     // Rollback on error
+    $conn->rollBack();
     echo "<tr><td colspan='10'>Error loading borrowings: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
 }
 ?>

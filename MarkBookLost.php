@@ -35,13 +35,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["borrowingID"])) {
     }
     $check->close();
 
+    $conn->begin_transaction(); // Begin transaction
+
     // Step 2: Add a new fine for R600 (Safe via prepared statement )
     $insert = $conn->prepare("INSERT INTO Fines (BorrowingID, Amount) VALUES (?, 600)");
-     // Only bind the borrowingID, amount is fixed
+    // Only bind the borrowingID, amount is fixed
     $insert->bind_param("i", $borrowingID);
     if ($insert->execute()) {
+        $conn->commit(); // Commit transaction
         echo "Fine of R600 added for lost/damaged book.";
     } else {
+        $conn->rollback(); // Rollback transaction on failure
         http_response_code(500);
         echo "Failed to insert fine.";
     }
