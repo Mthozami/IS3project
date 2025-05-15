@@ -1,5 +1,5 @@
 <?php
-// DB connection
+//  I make a tunnel to my database
 $host = "localhost";
 $username = "root";
 $password = "Mthozami@2004";
@@ -10,7 +10,7 @@ if ($conn->connect_error) {
     die("Database connection failed.");
 }
 
-// Only handle POST request
+// I only want to help if the user is posting a form
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $bookId     = $_POST["bookId"]     ?? "";
     $userId     = $_POST["userId"]     ?? "";
@@ -18,18 +18,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $borrowDate = $_POST["borrowDate"] ?? "";
     $returnDate = $_POST["returnDate"] ?? "";
 
-    // Validate required fields
+    //  I make sure all parts are filled
     if (empty($bookId) || empty($userId) || empty($borrowDate) || empty($returnDate)) {
         die("Missing required fields.");
     }
 
-    // ✅ Enforce only 1 book borrowing
+    //  You can only borrow 1 book at once! Sorry!
     if ((int)$quantity !== 1) {
         die("You are only allowed to borrow 1 book at a time.");
     }
 
-    // ✅ Validate date format and logic
-    $today = new DateTime(); // Today
+    // I make sure the dates are not weird or broken
+    $today = new DateTime();
     $borrowDateObj = DateTime::createFromFormat('Y-m-d', $borrowDate);
     $returnDateObj = DateTime::createFromFormat('Y-m-d', $returnDate);
 
@@ -37,7 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Invalid date format. Use YYYY-MM-DD.");
     }
 
-    // Remove time for fair comparison
     $today->setTime(0, 0, 0);
     $borrowDateObj->setTime(0, 0, 0);
     $returnDateObj->setTime(0, 0, 0);
@@ -50,12 +49,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Return date cannot be before the borrow date.");
     }
 
-    // 1. Check available book quantity
+    //  I check if there's any book left on the shelf
     $checkQuery = "SELECT Quantity FROM Books WHERE BookID = ?";
     $stmt = $conn->prepare($checkQuery);
-    $stmt->bind_param("i", $bookId);
+    //  SQL injection blocked here
+    $stmt->bind_param("i", $bookId); 
     $stmt->execute();
     $result = $stmt->get_result();
+
     if ($result->num_rows === 0) {
         die("Book not found.");
     }
@@ -65,25 +66,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("No copies available.");
     }
 
-    // 2. Insert into Borrowings table
+    // I add the borrowing to the borrowings list
     $insertQuery = "
         INSERT INTO Borrowings (UserID, BookID, Quantity, BorrowedDate, ReturnDate, Status)
         VALUES (?, ?, ?, ?, ?, 'borrowed')
     ";
     $stmt = $conn->prepare($insertQuery);
+     // make my database  safe from sql injection!
     $stmt->bind_param("iiiss", $userId, $bookId, $quantity, $borrowDate, $returnDate);
 
     if ($stmt->execute()) {
-        // 3. Update quantity in Books
+        // I  take 1 book off the shelf
         $updateQuery = "UPDATE Books SET Quantity = Quantity - 1 WHERE BookID = ?";
         $updateStmt = $conn->prepare($updateQuery);
         $updateStmt->bind_param("i", $bookId);
         $updateStmt->execute();
+
         echo "Borrowing recorded successfully.";
     } else {
         echo "Failed to record borrowing.";
     }
-
 } else {
     echo "Invalid request method.";
 }
