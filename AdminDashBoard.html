@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Metadata and font import -->
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
+    /* Global Reset and Font */
     * {
       margin: 0;
       padding: 0;
@@ -12,6 +15,7 @@
       font-family: 'Poppins', sans-serif;
     }
 
+    /* Body layout and background */
     body {
       background-color: #f8fafc;
       color: #333;
@@ -20,6 +24,7 @@
       min-height: 100vh;
     }
 
+    /* Navigation bar styling */
     .navbar {
       background-color: #003366;
       color: white;
@@ -30,17 +35,20 @@
       flex-wrap: wrap;
     }
 
+    /* Logo styling */
     .logo {
       font-size: 1.5rem;
       font-weight: 600;
     }
 
+    /* Navigation links container */
     .nav-links {
       display: flex;
       align-items: center;
       gap: 20px;
     }
 
+    /* Styling for each navigation link */
     .nav-links a {
       color: white;
       text-decoration: none;
@@ -48,11 +56,13 @@
       transition: 0.3s;
     }
 
+    /* Hover effect on nav links */
     .nav-links a:hover {
-     background-color: rgb(38, 166, 235);
-    border-radius: 6px;
+      background-color: rgb(38, 166, 235);
+      border-radius: 6px;
     }
 
+    /* Logout button styling */
     .logout-btn {
       background-color: #e74c3c;
       color: white;
@@ -64,26 +74,31 @@
       transition: background 0.3s;
     }
 
+    /* Hover effect for logout button */
     .logout-btn:hover {
       background-color: #c0392b;
     }
 
+    /* Main dashboard area */
     .dashboard {
       padding: 40px 30px;
       flex: 1;
     }
 
+    /* Main heading */
     h1 {
       font-size: 2rem;
       margin-bottom: 10px;
     }
 
+    /* Subheading under main title */
     .subheading {
       font-size: 1.1rem;
       color: #555;
       margin-bottom: 30px;
     }
 
+    /* Layout for statistic cards */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -91,6 +106,7 @@
       margin-bottom: 40px;
     }
 
+    /* Individual card styling */
     .card {
       background-color: white;
       padding: 20px;
@@ -99,33 +115,39 @@
       transition: transform 0.3s;
     }
 
+    /* Hover effect for cards */
     .card:hover {
       transform: translateY(-5px);
     }
 
+    /* Card headings */
     .card h3 {
       font-size: 1.1rem;
       margin-bottom: 10px;
       color: #4b6cb7;
     }
 
+    /* Card data values */
     .card p {
       font-size: 1rem;
       font-weight: bold;
     }
 
+    /* Quick admin actions section */
     .quick-actions h2 {
       margin-bottom: 15px;
       font-size: 1.4rem;
       color: #2c3e50;
     }
 
+    /* Layout for action buttons */
     .action-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
     }
 
+    /* Styling for action buttons */
     .action-buttons button {
       background-color: #4b6cb7;
       color: white;
@@ -138,6 +160,7 @@
       transition: background-color 0.3s;
     }
 
+    /* Hover effect for action buttons */
     .action-buttons button:hover {
       background-color: #3a579d;
     }
@@ -145,6 +168,7 @@
 </head>
 <body>
 
+<!-- Top navigation bar -->
 <header class="navbar">
   <div class="logo">📚 Admin Dashboard</div>
   <nav class="nav-links">
@@ -158,10 +182,13 @@
   </nav>
 </header>
 
+<!-- Main content section -->
 <main class="dashboard">
+  <!-- Welcome message -->
   <h1>Welcome, Admin </h1>
   <p class="subheading">Here’s what’s happening in your library today</p>
 
+  <!-- Statistic cards -->
   <section class="cards">
     <div class="card">
       <h3>Total Users</h3>
@@ -185,6 +212,7 @@
     </div>
   </section>
 
+  <!-- Quick admin action buttons -->
   <section class="quick-actions">
     <h2>Quick Admin Actions</h2>
     <div class="action-buttons">
@@ -197,26 +225,30 @@
 </main>
 
 <script>
+  // Function to confirm logout
   function confirmLogout() {
     const userConfirmed = confirm("Are you sure you want to log out?");
     if (userConfirmed) {
-      window.location.href = "home.html";
+      window.location.href = "home.html"; // Redirect to home page on confirmation
     }
   }
 
+  // Function to fetch dashboard statistics from backend
   function fetchStats() {
-    fetch("get_dashboard_stats.php")
-      .then(res => res.json())
+    fetch("get_dashboard_stats.php") // API endpoint to fetch stats
+      .then(res => res.json()) // Convert response to JSON
       .then(data => {
+        // Populate stats in UI
         document.getElementById("studentsCount").innerText = ` ${data.totalStudents} registered`;
         document.getElementById("booksCount").innerText = `${data.totalBooks} in library`;
         document.getElementById("borrowedCount").innerText = ` ${data.borrowedBooks} currently borrowed`;
         document.getElementById("overdueCount").innerText = ` ${data.overdueBooks} overdue`;
         document.getElementById("finesCount").innerText = ` R${data.finesCollected}`;
       })
-      .catch(err => console.error("Failed to fetch dashboard stats:", err));
+      .catch(err => console.error("Failed to fetch dashboard stats:", err)); // Handle errors
   }
 
+  // Call fetchStats when page loads
   window.onload = fetchStats;
 </script>
 
