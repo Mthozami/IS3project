@@ -11,6 +11,9 @@ if ($conn->connect_error) {
   exit;
 }
 
+// Begin transaction
+$conn->begin_transaction();
+
 // SQL query to retrieve fines along with user, book, and borrowing info
 $sql = "
   SELECT 
@@ -31,6 +34,7 @@ $result = $conn->query($sql);
 // If no results found, print a placeholder row
 if (!$result || $result->num_rows === 0) {
   echo "<tr><td colspan='8'>No fines found.</td></tr>";
+  $conn->commit(); // Commit transaction
   exit;
 }
 
@@ -57,6 +61,9 @@ while ($row = $result->fetch_assoc()) {
           <td>$actions</td>
         </tr>";
 }
+
+// Commit transaction
+$conn->commit();
 
 // Close the database connection
 $conn->close();

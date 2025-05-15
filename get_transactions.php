@@ -11,6 +11,9 @@ if ($conn->connect_error) {
   exit;
 }
 
+// Begin transaction
+$conn->begin_transaction();
+
 // SQL query to fetch transactions joined with fines, borrowings, users, and books
 $sql = "
   SELECT 
@@ -35,6 +38,7 @@ $result = $conn->query($sql);
 // If no results, display a message row
 if (!$result || $result->num_rows === 0) {
   echo "<tr><td colspan='7'>No transactions found.</td></tr>";
+  $conn->commit(); // Commit transaction
   exit;
 }
 
@@ -51,6 +55,9 @@ while ($row = $result->fetch_assoc()) {
   echo "<td>" . htmlspecialchars($row["PaymentDate"]) . "</td>";
   echo "</tr>";
 }
+
+// Commit transaction
+$conn->commit();
 
 // Close DB connection
 $conn->close();
