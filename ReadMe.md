@@ -15,3 +15,57 @@ The objective of this project is to design and implement a fully functional data
 •	Backend: PHP
 •	Database: MySQL
 •	Version Control: Git and Github
+
+## STEPS INVOLVED IN THE DEVELOPMENT OF THE PROJECT
+
+#### Planning & Requirements Gathering
+
+• Defined the purpose of the system: a Library Management System for book borrowing and fine tracking.
+
+• Identified key system actors: Admin and Borrower.
+
+#### Database Design
+
+• Created an Entity-Relationship Diagram (ERD) to model how Users, Books, Borrowings, Fines, and Transactions interact.
+
+• Normalized the database up to 3NF to ensure data consistency and eliminate redundancy.
+
+#### Logical & Physical Implementation
+
+• Translated ERD into actual MySQL tables with appropriate fields, data types, primary and foreign keys.
+
+• Indexed key columns for performance.
+
+#### Backend Development with PHP
+
+• Used prepared statements and session handling for security and authentication.
+
+• Implemented full CRUD operations for users, books, and borrowings.
+
+• Ensured fine generation, payment handling, and transaction recording.
+
+#### Frontend Development
+
+• Built user interfaces using HTML, CSS, and JavaScript.
+
+• Used alerts and confirmations to enhance user experience.
+
+• Created separate dashboards for Admin and Borrower roles.
+
+#### Security & Access Control
+
+• Applied session-based authentication.
+
+• Restricted access to certain pages based on user roles.
+
+#### Backup & Recovery
+
+• Developed a batch script to automate database backups daily using mysqldump.
+
+• Documented how to restore the database using the .sql file.
+
+#### Testing & Debugging
+
+• Simulated multiple users to test concurrency and transaction safety.
+
+• Ensured proper error handling and validation throughout.
