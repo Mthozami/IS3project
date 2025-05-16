@@ -68,6 +68,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["fineID"])) {
 
     // Step 4: Insert payment record
     $receipt = uniqid("RCPT-"); 
+
+    // Set local timezone for accurate timestamps
+    date_default_timezone_set('Africa/Johannesburg');
+
+
     $paymentDate = date("Y-m-d H:i:s"); 
 
     $stmt = $conn->prepare("INSERT INTO Transactions (FineID, ReceiptNumber, PaymentDate, PaidAmount) VALUES (?, ?, ?, ?)");
