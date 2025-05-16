@@ -15,8 +15,7 @@
             <h1><i class="fas fa-book-open"></i> Siza Library</h1>
             <nav>
                 <a href="home.html">Home</a>
-                <a href="about.html" class="active">About Us</a>
-                
+                <a href="about.html" class="active">About Us</a> 
                 <a href="gallery.html">Gallery</a>
                 <a href="contact.html">Contact</a>
                 <a href="login.html">Login</a>
@@ -77,8 +76,10 @@
             <div class="rule-box">
               <h2>📝 How to Register as a Member</h2>
               <ul>
-                <li>Complete a membership form in person or register online through our website.</li>
-                <li>Provide valid identification and proof of address.</li>
+                <li>Go to Siza Library in person during operating hours.</li>
+                <li>Speak to librarian or Admin Desk for membership.</li>
+                <li>Provide your full names, email and cellphone number.</li>
+                <li>Get registerd by Admin.</li>
                 <li>Membership is free for students and local residents.</li>
                 <li>Once approved, you'll receive a library card for borrowing privileges.</li>
               </ul>
@@ -90,8 +91,8 @@
                 <li>Members may borrow up to 1 book at a time.</li>
                 <li>Books are due back within 7 days of borrowing.</li>
                 <li>Renewals allowed once unless the item is reserved by another member.</li>
-                <li>Late returns incur a fine of R5 per day per book.</li>
-                <li>Lost or damaged items must be replaced or paid for in full.</li>
+                <li>Late returns incur a fine of R25 per day per book.</li>
+                <li>Lost or damaged items must be replaced or paid for in full R600 fee.</li>
               </ul>
             </div>
           
@@ -102,14 +103,44 @@
                 <li>Eating and drinking are not permitted inside the library.</li>
                 <li>Handle all library materials with care.</li>
                 <li>Treat library staff and fellow members with respect.</li>
-                <li>Mobile phones must be on silent; calls in designated areas only.</li>
+                <li>Mobile phones must be on silent, calls in designated areas only.</li>
+                <li>Respect time limit so others can also access computers.</li>
+                <li>Do not access inappropriate or offensive content.</li>
+                <li>Use computers for for educational and research purposes only.</li>
+                <li>No smoking or illegal susbstances.</li>
+                <li>Failure to comply wuth this Code Of Conduct may result in disciplinary action or suspension.</li>
               </ul>
             </div>
           </section>
-        
+        <section class="operating-hours">
+  <div class="container">
+    <h2>📅 Operating Hours</h2>
+    <table>
+      <tr>
+        <th>Day</th>
+        <th>Opening Time</th>
+        <th>Closing Time</th>
+      </tr>
+      <tr>
+        <td>Monday - Friday</td> 
+        <td>08:00 AM</td>
+        <td>05:00 PM</td>
+      </tr>
+      <tr>
+        <td>Saturday</td>
+               <td>09:00 AM</td>
+               <td>01:00 PM</td>
+              </tr>
+               <tr>
+               <td>Sunday & Public Holidays</td>
+               <td colspan="2">Closed</td>
+               </tr>
+                </table>
+              </div>
+          </section>
           <section class="library-team">
                 <div class="container">
-                  <h2>👥 Meet Our Team</h2>
+                  <h2> Meet Our Team</h2>
                   <p>Our dedicated librarians and support staff are here to help you learn, explore, and succeed.</p>
               
                   <div class="team-grid">
@@ -205,7 +236,7 @@
               
               <section class="community-involvement">
                     <div class="container">
-                      <h2>🌍 Community Involvement</h2>
+                      <h2>Community Involvement</h2>
                       <p>We believe in making a positive impact in the community. Here’s how we are involved:</p>
                   
                       <div class="involvement-grid">
@@ -387,7 +418,43 @@
   }
 }
 
+.operating-hours {
+  background-color: #f8f8f8;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
 
+.operating-hours h2 {
+  font-size: 28px;
+  color: #1a4d8f;
+  margin-bottom: 20px;
+}
+
+.operating-hours table {
+  margin: 0 auto;
+  width: 80%;
+  max-width: 600px;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.operating-hours th,
+.operating-hours td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.operating-hours th {
+  background-color: #1a4d8f;
+  color: white;
+}
+
+.operating-hours tr:nth-child(even) {
+  background-color: #f0f4f8;
+}
 </style>              
     <!-- Footer (same as homepage) -->
     <footer>
@@ -414,7 +481,7 @@
 
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: info@sizalibrary.co.za<br>Phone: +27 12 345 6789</p>
+                <p>Email: info@sizalibrary.co.za<br>Phone: +27 76 101 0572</p>
                 <div class="social-icons">
                     <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" alt="Facebook"></a>
                     <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/145/145812.png" alt="Instagram"></a>

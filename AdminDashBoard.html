@@ -83,6 +83,8 @@
     .dashboard {
       padding: 40px 30px;
       flex: 1;
+      text-align: center;
+
     }
 
     /* Main heading */
@@ -100,70 +102,127 @@
 
     /* Layout for statistic cards */
     .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-    }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 30px;
+  background: #f8fafc;
+}
 
-    /* Individual card styling */
-    .card {
-      background-color: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      transition: transform 0.3s;
-    }
+/* Card style with colored border and background animation */
+.card {
+  width: 220px;
+  padding: 20px;
+  background: white;
+  border-left: 6px solid #4e91fc; /* Primary color border */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
 
-    /* Hover effect for cards */
-    .card:hover {
-      transform: translateY(-5px);
-    }
+/* Stagger animation */
+.card:nth-child(1) { border-color: #4e91fc; animation-delay: 0.1s; }
+.card:nth-child(2) { border-color: #34c38f; animation-delay: 0.2s; }
+.card:nth-child(3) { border-color: #f1b44c; animation-delay: 0.3s; }
+.card:nth-child(4) { border-color: #f46a6a; animation-delay: 0.4s; }
+.card:nth-child(5) { border-color: #6f42c1; animation-delay: 0.5s; }
 
-    /* Card headings */
-    .card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-      color: #4b6cb7;
-    }
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    /* Card data values */
-    .card p {
-      font-size: 1rem;
-      font-weight: bold;
-    }
+/* Hover effect for interaction */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
 
-    /* Quick admin actions section */
-    .quick-actions h2 {
-      margin-bottom: 15px;
-      font-size: 1.4rem;
-      color: #2c3e50;
-    }
+/* Text styling */
+.card h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
 
-    /* Layout for action buttons */
-    .action-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
+.card p {
+  font-size: 15px;
+  font-weight: bold;
+  color: #222;
+  margin-top: 10px;
+  animation: popIn 0.4s ease;
+}
 
-    /* Styling for action buttons */
-    .action-buttons button {
-      background-color: #4b6cb7;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
 
     /* Hover effect for action buttons */
     .action-buttons button:hover {
       background-color: #3a579d;
     }
+
+    /* Existing styles remain unchanged */
+.events-panel {
+  background-color: #f9f9f9;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.events-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.events-container h2 {
+  color: #1a4d8f;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.event-card {
+  background-color: #fff;
+  border-left: 5px solid #1a4d8f;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 8px;
+
+  /* Add animation */
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInEvent 0.6s ease forwards;
+}
+
+/* Optional: stagger animation for multiple cards */
+.event-card:nth-child(1) { animation-delay: 0.1s; }
+.event-card:nth-child(2) { animation-delay: 0.2s; }
+.event-card:nth-child(3) { animation-delay: 0.3s; }
+.event-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInEvent {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Closure-specific styling still applies */
+.event-card.closure {
+  border-left-color: #d9534f;
+  background-color: #fff7f7;
+}
+
   </style>
 </head>
 <body>
@@ -211,17 +270,31 @@
       <p id="finesCount">Loading...</p>
     </div>
   </section>
+  <section class="events-panel">
+  <div class="events-container">
+    <h2>📅 Upcoming Events & Closures</h2>
 
-  <!-- Quick admin action buttons -->
-  <section class="quick-actions">
-    <h2>Quick Admin Actions</h2>
-    <div class="action-buttons">
-      <a href="AddBook.html"><button>Add New Book</button></a>
-      <a href="RegisterStudent.html"><button>View Users</button></a>
-      <a href="Borrowings.html"><button>Check Borrowed</button></a>
-      <a href="Fines.html"><button>See All Fines</button></a>
+    <div class="event-card">
+      <h3>📚 Reading Workshop</h3>
+      <p><strong>Date:</strong> May 25, 2025</p>
+      <p><strong>Time:</strong> 10:00 AM – 12:30 PM</p>
+      <p><strong>Location:</strong> Siza Library Main Hall</p>
     </div>
-  </section>
+
+    <div class="event-card">
+      <h3>📖 Storytelling for Kids</h3>
+      <p><strong>Date:</strong> June 1, 2025</p>
+      <p><strong>Time:</strong> 09:00 AM – 11:00 AM</p>
+      <p><strong>Location:</strong> Children’s Section</p>
+    </div>
+
+    <div class="event-card closure">
+      <h3>🚫 Public Holiday – Library Closed</h3>
+      <p><strong>Date:</strong> June 16, 2025</p>
+      <p><strong>Reason:</strong> Youth Day</p>
+    </div>
+  </div>
+</section>
 </main>
 
 <script>
